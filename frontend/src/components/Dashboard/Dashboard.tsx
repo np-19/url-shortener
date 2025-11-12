@@ -119,12 +119,12 @@ const Dashboard = () => {
                   className={isExpired(url.expiresAt) ? 'bg-red-50' : ''}
                 >
                   <td className="px-6 py-4">
-                    <div className="max-w-xs truncate text-sm text-gray-900">
+                    <div className="max-w-60 truncate text-sm text-gray-900">
                       {url.originalUrl}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm max-w-60 truncate text-gray-800 font-mono">
+                    <div className="text-sm max-w-xs truncate text-gray-800 font-mono">
                       {constants.backendUrl + '/' + url.shortId}
                     </div>
                   </td>
