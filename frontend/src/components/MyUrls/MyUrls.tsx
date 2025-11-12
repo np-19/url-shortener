@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { urlService } from '../../services';
 import type { UrlItem } from '../../services';
 import LoadingBar from '../LoadingBar';
+import constants from '../../configs/constants';
 
 const MyUrls = () => {
   const [urls, setUrls] = useState<UrlItem[]>([]);
@@ -125,7 +126,7 @@ const MyUrls = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-800 font-mono">
-                      {url.shortId}
+                      {constants.backendUrl + '/' + url.shortId}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

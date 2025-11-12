@@ -1,6 +1,7 @@
 const env = import.meta.env;
 
-const backendUrl = String(env.VITE_BACKEND_URL || 'http://localhost:3000');
+// Remove trailing slash if present
+const backendUrl = String(env.VITE_BACKEND_URL || 'http://localhost:3000').replace(/\/$/, '');
 
 const constants = {
     backendUrl: backendUrl,
