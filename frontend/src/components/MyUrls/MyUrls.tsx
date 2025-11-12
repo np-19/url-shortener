@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { urlService } from '../../services';
 import type { UrlItem } from '../../services';
 import LoadingBar from '../LoadingBar';
+import Toast from '../Toast';
 import constants from '../../configs/constants';
 
 const MyUrls = () => {
   const [urls, setUrls] = useState<UrlItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   const fetchUrls = async () => {
     setLoading(true);
@@ -37,7 +39,7 @@ const MyUrls = () => {
   const copyToClipboard = (shortId: string) => {
     const shortUrl = urlService.getShortUrl(shortId);
     navigator.clipboard.writeText(shortUrl);
-    alert('Copied to clipboard!');
+    setToast({ message: 'Copied to clipboard!', type: 'success' });
   };
 
   const isExpired = (expiresAt: string) => {
@@ -176,6 +178,14 @@ const MyUrls = () => {
       <div className="mt-6 text-sm text-gray-500">
         Total URLs: {urls.length}
       </div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };
