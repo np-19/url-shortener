@@ -10,20 +10,20 @@ const Home = () => {
 
   return (
     <div>
-      <div className="text-center mb-12">
-        <h2 className="text-4xl font-extrabold text-gray-900 sm:text-5xl mb-4">
+      <div className="text-center mb-8 sm:mb-12 px-4">
+        <h2 className="font-extrabold text-gray-900 mb-3 sm:mb-4" style={{ fontSize: 'clamp(1.75rem, 5vw, 3rem)' }}>
           Make your links shorter & smarter
         </h2>
-        <p className="text-xl text-gray-600">
+        <p className="text-gray-600" style={{ fontSize: 'clamp(1rem, 2.5vw, 1.25rem)' }}>
           Transform long URLs into clean, shareable links in seconds
         </p>
       </div>
       <UrlShortener onUrlCreated={handleUrlCreated} />
 
-      <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="text-center">
-          <div className="bg-gray-800 text-white rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="mt-12 sm:mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 px-4">
+        <div className="text-center p-4">
+          <div className="bg-gray-800 text-white rounded-full w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -32,15 +32,17 @@ const Home = () => {
               />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Fast & Reliable</h3>
-          <p className="text-gray-600">
+          <h3 className="font-semibold text-gray-900 mb-2" style={{ fontSize: 'clamp(1rem, 2vw, 1.125rem)' }}>
+            Fast & Reliable
+          </h3>
+          <p className="text-gray-600" style={{ fontSize: 'clamp(0.875rem, 1.8vw, 1rem)' }}>
             Create shortened URLs instantly with our high-performance system
           </p>
         </div>
 
-        <div className="text-center">
-          <div className="bg-gray-700 text-white rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="text-center p-4">
+          <div className="bg-gray-700 text-white rounded-full w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -49,15 +51,17 @@ const Home = () => {
               />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Track Analytics</h3>
-          <p className="text-gray-600">
+          <h3 className="font-semibold text-gray-900 mb-2" style={{ fontSize: 'clamp(1rem, 2vw, 1.125rem)' }}>
+            Track Analytics
+          </h3>
+          <p className="text-gray-600" style={{ fontSize: 'clamp(0.875rem, 1.8vw, 1rem)' }}>
             Monitor click counts and engagement for all your links
           </p>
         </div>
 
-        <div className="text-center">
-          <div className="bg-gray-600 text-white rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="text-center p-4 sm:col-span-2 md:col-span-1">
+          <div className="bg-gray-600 text-white rounded-full w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -66,8 +70,10 @@ const Home = () => {
               />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Secure & Private</h3>
-          <p className="text-gray-600">
+          <h3 className="font-semibold text-gray-900 mb-2" style={{ fontSize: 'clamp(1rem, 2vw, 1.125rem)' }}>
+            Secure & Private
+          </h3>
+          <p className="text-gray-600" style={{ fontSize: 'clamp(0.875rem, 1.8vw, 1rem)' }}>
             Your data is safe with automatic link expiration
           </p>
         </div>

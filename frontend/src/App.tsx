@@ -49,10 +49,10 @@ const AppContent = () => {
   }, [dispatch]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
 
-      <main className="min-h-[90vh] py-12">
+      <main className="flex-1 py-6 sm:py-8 lg:py-12">
         <Container>
           <Routes>
             <Route path="/" element={<Home />} />

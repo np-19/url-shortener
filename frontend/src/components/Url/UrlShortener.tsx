@@ -58,12 +58,12 @@ const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-8 max-w-2xl mx-auto">
-      <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+    <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 lg:p-8 max-w-2xl mx-auto">
+      <h2 className="font-bold text-gray-800 mb-4 sm:mb-6 text-center" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)' }}>
         Shorten Your URL
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
         <div>
           <label htmlFor="url" className="block text-sm font-medium text-gray-700 mb-2">
             Enter your long URL
@@ -74,7 +74,7 @@ const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://example.com/very-long-url"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none transition"
+            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none transition text-sm sm:text-base"
           />
         </div>
 
@@ -86,7 +86,7 @@ const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
             id="expires"
             value={expiresIn}
             onChange={(e) => setExpiresIn(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none transition"
+            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none transition text-sm sm:text-base"
           >
             <option value="1">1 day</option>
             <option value="7">7 days</option>
@@ -97,7 +97,7 @@ const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-sm sm:text-base">
             {error}
           </div>
         )}
@@ -105,25 +105,25 @@ const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm sm:text-base"
         >
           {loading ? 'Shortening...' : 'Shorten URL'}
         </button>
       </form>
 
       {shortUrl && (
-        <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-sm text-gray-600 mb-2">Your shortened URL:</p>
-          <div className="flex items-center gap-2">
+        <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-green-50 border border-green-200 rounded-lg">
+          <p className="text-xs sm:text-sm text-gray-600 mb-2">Your shortened URL:</p>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <input
               type="text"
               value={shortUrl}
               readOnly
-              className="flex-1 px-4 py-2 bg-white border border-gray-300 rounded-lg"
+              className="flex-1 px-3 sm:px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm sm:text-base"
             />
             <button
               onClick={copyToClipboard}
-              className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
+              className="bg-gray-800 hover:bg-gray-900 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 text-sm sm:text-base whitespace-nowrap"
             >
               Copy
             </button>

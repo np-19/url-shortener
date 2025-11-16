@@ -59,12 +59,12 @@ const MyUrls = () => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-8">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold text-gray-800">My URLs</h2>
+    <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 lg:p-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">My URLs</h2>
         <button
           onClick={fetchUrls}
-          className="bg-gray-800 hover:bg-gray-900 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
+          className="bg-gray-800 hover:bg-gray-900 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 w-full sm:w-auto"
         >
           Refresh
         </button>
@@ -91,65 +91,150 @@ const MyUrls = () => {
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Original URL
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Short URL
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Clicks
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Created
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Expires
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {urls.map((url) => (
-                <tr
-                  key={url._id}
-                  className={isExpired(url.expiresAt) ? 'bg-red-50' : ''}
-                >
-                  <td className="px-6 py-4">
-                    <div className="max-w-60 truncate text-sm text-gray-900">
-                      {url.originalUrl}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 max-w-xs truncate whitespace-nowrap">
-                    <div className="text-sm text-gray-800 font-mono">
+        <>
+          {/* Desktop Table View */}
+          <div className="hidden lg:block overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Original URL
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Short URL
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Clicks
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Created
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Expires
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {urls.map((url) => (
+                  <tr
+                    key={url._id}
+                    className={isExpired(url.expiresAt) ? 'bg-red-50' : ''}
+                  >
+                    <td className="px-6 py-4">
+                      <div className="max-w-60 truncate text-sm text-gray-900">
+                        {url.originalUrl}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 max-w-xs truncate whitespace-nowrap">
+                      <div className="text-sm text-gray-800 font-mono">
+                        {constants.backendUrl + '/' + url.shortId}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                        {url.clicks}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {formatDate(url.createdAt)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      {isExpired(url.expiresAt) ? (
+                        <span className="text-red-600 font-semibold">Expired</span>
+                      ) : (
+                        <span className="text-gray-500">{formatDate(url.expiresAt)}</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <button
+                        onClick={() => copyToClipboard(url.shortId)}
+                        className="text-gray-700 hover:text-gray-900 font-medium"
+                        disabled={isExpired(url.expiresAt)}
+                      >
+                        Copy
+                      </button>
+                      <a
+                        href={urlService.getShortUrl(url.shortId)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`ml-4 font-medium ${
+                          isExpired(url.expiresAt)
+                            ? 'text-gray-400 cursor-not-allowed'
+                            : 'text-gray-700 hover:text-gray-900'
+                        }`}
+                        onClick={(e) => isExpired(url.expiresAt) && e.preventDefault()}
+                      >
+                        Visit
+                      </a>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="lg:hidden space-y-4">
+            {urls.map((url) => (
+              <div
+                key={url._id}
+                className={`p-4 rounded-lg border ${
+                  isExpired(url.expiresAt)
+                    ? 'bg-red-50 border-red-200'
+                    : 'bg-white border-gray-200'
+                } shadow-sm`}
+              >
+                <div className="space-y-3">
+                  {/* Original URL */}
+                  <div>
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">
+                      Original URL
+                    </p>
+                    <p className="text-sm text-gray-900 break-all">{url.originalUrl}</p>
+                  </div>
+
+                  {/* Short URL */}
+                  <div>
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">
+                      Short URL
+                    </p>
+                    <p className="text-sm text-gray-800 font-mono break-all">
                       {constants.backendUrl + '/' + url.shortId}
+                    </p>
+                  </div>
+
+                  {/* Stats Row */}
+                  <div className="flex items-center justify-between pt-2 border-t border-gray-200">
+                    <div>
+                      <p className="text-xs text-gray-500">Clicks</p>
+                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                        {url.clicks}
+                      </span>
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                      {url.clicks}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatDate(url.createdAt)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <div className="text-right">
+                      <p className="text-xs text-gray-500">Created</p>
+                      <p className="text-sm text-gray-700">{formatDate(url.createdAt)}</p>
+                    </div>
+                  </div>
+
+                  {/* Expiry */}
+                  <div>
+                    <p className="text-xs text-gray-500">Expires</p>
                     {isExpired(url.expiresAt) ? (
-                      <span className="text-red-600 font-semibold">Expired</span>
+                      <span className="text-sm text-red-600 font-semibold">Expired</span>
                     ) : (
-                      <span className="text-gray-500">{formatDate(url.expiresAt)}</span>
+                      <span className="text-sm text-gray-700">{formatDate(url.expiresAt)}</span>
                     )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-3 pt-2">
                     <button
                       onClick={() => copyToClipboard(url.shortId)}
-                      className="text-gray-700 hover:text-gray-900 font-medium"
+                      className="flex-1 bg-gray-800 hover:bg-gray-900 text-white font-medium py-2 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                       disabled={isExpired(url.expiresAt)}
                     >
                       Copy
@@ -158,21 +243,21 @@ const MyUrls = () => {
                       href={urlService.getShortUrl(url.shortId)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`ml-4 font-medium ${
+                      className={`flex-1 text-center font-medium py-2 px-4 rounded-lg border transition ${
                         isExpired(url.expiresAt)
-                          ? 'text-gray-400 cursor-not-allowed'
-                          : 'text-gray-700 hover:text-gray-900'
+                          ? 'border-gray-300 text-gray-400 cursor-not-allowed'
+                          : 'border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white'
                       }`}
                       onClick={(e) => isExpired(url.expiresAt) && e.preventDefault()}
                     >
                       Visit
                     </a>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       <div className="mt-6 text-sm text-gray-500">
