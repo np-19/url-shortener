@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { urlService } from '../../services';
+import Toast from '../Toast';
 
 interface UrlShortenerProps {
   onUrlCreated: () => void;
@@ -11,6 +12,7 @@ const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
   const [shortUrl, setShortUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,7 +54,7 @@ const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(shortUrl);
-    alert('Copied to clipboard!');
+    setToast({ message: 'Copied to clipboard!', type: 'success' });
   };
 
   return (
@@ -127,6 +129,14 @@ const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
             </button>
           </div>
         </div>
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
     </div>
   );
