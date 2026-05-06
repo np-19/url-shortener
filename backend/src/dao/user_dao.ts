@@ -1,7 +1,7 @@
 import { UserModel } from "../models/user_model.js";
-import type { IUser } from "../models/user_model.js";
+import type { IUser } from "../types/mongo_types.js";
 
-export const createUser = async (
+export const createUserDB = async (
   name: string,
   email: string,
   password: string
@@ -15,19 +15,19 @@ export const createUser = async (
   return await user.save();
 };
 
-export const findUserByEmail = async (email: string): Promise<IUser | null> => {
+export const findUserByEmailDB = async (email: string): Promise<IUser | null> => {
   return await UserModel.findOne({ email }).select("+password");
 };
 
-export const findUserById = async (userId: string): Promise<IUser | null> => {
+export const findUserByIdDB = async (userId: string): Promise<IUser | null> => {
   return await UserModel.findById(userId);
 };
 
-export const getAllUsers = async (): Promise<IUser[]> => {
+export const getAllUsersDB = async (): Promise<IUser[]> => {
   return await UserModel.find().select("-password");
 };
 
-export const updateUser = async (
+export const updateUserDB = async (
   userId: string,
   updates: Partial<IUser>
 ): Promise<IUser | null> => {
@@ -38,7 +38,7 @@ export const updateUser = async (
   ).select("-password");
 };
 
-export const deleteUser = async (userId: string): Promise<boolean> => {
+export const deleteUserDB = async (userId: string): Promise<boolean> => {
   const result = await UserModel.findByIdAndDelete(userId);
   return !!result;
 };

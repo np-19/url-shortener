@@ -1,8 +1,4 @@
-interface IExpressError {
-    statusCode: number;
-    message: string;
-}   
-
+import type { IExpressError } from "../types/error_types.js";
 
 class ExpressError extends Error implements IExpressError {
     constructor(public message: string, public statusCode: number) {
@@ -10,18 +6,4 @@ class ExpressError extends Error implements IExpressError {
     }
 }
 
-
-
 export { ExpressError };
-
-// class ExpressError extends Error implements IExpressError {
-//     statusCode: number;
-//     message: string;
-
-//     constructor(message: string, statusCode: number) {
-//         super(message);
-//         this.statusCode = statusCode;
-//         this.message = message;
-//     }
-// }
-

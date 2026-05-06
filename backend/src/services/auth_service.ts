@@ -1,15 +1,6 @@
-import { createUser, findUserByEmail } from "../dao/user_dao.js";
+import { createUserDB, findUserByEmailDB } from "../dao/user_dao.js";
 import { generateToken } from "../utils/jwt.js";
-import type { IUser } from "../models/user_model.js";
-
-interface AuthResponse {
-  token: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-  };
-}
+import type { AuthResponse } from "../types/auth_types.js";
 
 
 export const registerUser = async (
@@ -17,7 +8,7 @@ export const registerUser = async (
   email: string,
   password: string
 ): Promise<AuthResponse> => {
-  const user = await createUser(name, email, password);
+  const user = await createUserDB(name, email, password);
   const token = generateToken(String(user._id), user.email);
 
   return {
@@ -34,7 +25,7 @@ export const loginUser = async (
   email: string,
   password: string
 ): Promise<AuthResponse> => {
-  const user = await findUserByEmail(email);
+  const user = await findUserByEmailDB(email);
   
   if (!user) {
     throw new Error("Invalid email or password");

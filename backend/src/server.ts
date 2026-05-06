@@ -17,28 +17,12 @@ connectDB(); // Connect to MongoDB
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// CORS configuration - support multiple origins
-const allowedOrigins = frontendUrl.split(',').map(url => url.trim());
-
+// CORS configuration
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, Postman, curl)
-    if (!origin) return callback(null, true);
-    
-    // Check if origin is in allowed list
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
+  origin: frontendUrl,
   optionsSuccessStatus: 200,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-console.log('Allowed origins:', allowedOrigins);
 
 app.use('/api/auth', authRoutes);
 app.use('/api', urlRoutes);

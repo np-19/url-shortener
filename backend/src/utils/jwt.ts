@@ -1,10 +1,6 @@
-import jwt, {Secret, SignOptions} from "jsonwebtoken";
-import {jwtExpiresIn, jwtSecret } from "../config/constants.js";
-
-interface JwtPayload {
-  userId: string;
-  email: string;
-}
+import jwt, { Secret, SignOptions } from "jsonwebtoken";
+import { jwtExpiresIn, jwtSecret } from "../config/constants.js";
+import type { JwtPayload } from "../types/jwt_types.js";
 
 export const generateToken = (userId: string, email: string): string => {
   return jwt.sign(

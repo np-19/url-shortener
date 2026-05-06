@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { registerUser, loginUser } from "../services/auth_service.js";
 import { ExpressError } from "../utils/expressError.js";
-import { findUserById } from "../dao/user_dao.js";
+import { findUserByIdDB } from "../dao/user_dao.js";
 
 export const registerController = async (
   req: Request,
@@ -22,7 +22,7 @@ export const registerController = async (
     });
   } catch (error: any) {
     if (error.message.includes("already exists")) {
-      throw new ExpressError(error.message, 409);
+      throw new ExpressError(error.message, 409);//409 is custom error code for conflict, which is appropriate for duplicate email registration attempts
     }
     throw new ExpressError(error.message, 400);
   }
@@ -54,9 +54,12 @@ export const getMeController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const userId = (req as any).user.userId;
+  if(!req.user) {
+    throw new ExpressError("Unauthorized", 401);
+  }
+  const userId: string = req.user.userId; //! is used to tell TypeScript that we are sure user is not undefined here.
   
-  const user = await findUserById(userId);
+  const user = await findUserByIdDB(userId);
   
   if (!user) {
     throw new ExpressError("User not found", 404);

@@ -1,15 +1,8 @@
 import mongoose from "mongoose";
-import { Document, Schema } from "mongoose";
+import { Schema } from "mongoose";
 import bcrypt from "bcryptjs";
+import { IUser } from "../types/mongo_types.js";
 
-interface IUser extends Document {
-  name: string;
-  email: string;
-  password: string;
-  createdAt: Date;
-  updatedAt: Date;
-  comparePassword(candidatePassword: string): Promise<boolean>;
-}
 
 const userSchema: Schema = new Schema<IUser>(
   {
@@ -23,7 +16,7 @@ const userSchema: Schema = new Schema<IUser>(
     email: {
       type: String,
       required: [true, "Email is required"],
-      unique: true,
+      unique: true, //also add unique index in DB for better performance
       lowercase: true,
       trim: true,
       match: [
@@ -45,7 +38,7 @@ const userSchema: Schema = new Schema<IUser>(
 
 // Hash password before saving
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
+  if (!this.isModified("password")) { //to avoid re-hashing the password if it hasn't been changed
     return next();
   }
   
@@ -66,4 +59,3 @@ userSchema.methods.comparePassword = async function (
 };
 
 export const UserModel = mongoose.model<IUser>("User", userSchema);
-export type { IUser };

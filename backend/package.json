@@ -10,7 +10,8 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.3",
-    "nanoid": "^5.1.6",
+    "node-addon-api": "^8.7.0",
+    "node-gyp": "^12.3.0",
     "qrcode": "^1.5.4",
     "validator": "^13.15.20"
   },
@@ -20,7 +21,7 @@
     "@types/node": "^24.10.0",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
-    "tsx": "^4.20.6",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
   "name": "backend",
@@ -30,6 +31,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
+    "build:gyp": "node-gyp configure build",
     "start": "node dist/server.js",
     "dev": "nodemon --watch src --ext ts,js --exec tsx src/server.ts"
   },

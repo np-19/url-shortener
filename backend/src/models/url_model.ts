@@ -1,16 +1,9 @@
 import mongoose from "mongoose";
-import { Document, Schema } from "mongoose";
+import { Schema } from "mongoose";
+import { IUrl } from "../types/mongo_types.js";
 
-interface IUrl extends Document {
-  originalUrl: string;
-  shortId: string;
-  clicks: number;
-  userId?: string;
-  qrCodeDataUrl?: string;
-  createdAt: Date;
-  expiresAt: Date; 
-  updatedAt: Date;
-}
+
+
 
 const urlSchema: Schema = new Schema<IUrl>(
   {
@@ -32,17 +25,11 @@ const urlSchema: Schema = new Schema<IUrl>(
         ref: 'User',
         required: false
     },
-    qrCodeDataUrl: {
-        type: String,
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
     expiresAt: {
         type: Date,
         required: true
     },
+
   },
   { timestamps: true }
 );
@@ -52,4 +39,3 @@ urlSchema.index({ createdAt: -1 });
 urlSchema.index({ clicks: -1 });
 
 export const UrlModel = mongoose.model<IUrl>("Url", urlSchema);
-export type { IUrl };
