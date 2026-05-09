@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { urlService } from '../../services';
 import Toast from '../Toast';
+import { urlDataSchema } from '../../schemas/apiSchemas';
 
 interface UrlShortenerProps {
   onUrlCreated: () => void;
@@ -8,6 +9,8 @@ interface UrlShortenerProps {
 
 const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
   const [url, setUrl] = useState('');
+  const [customAlias, setCustomAlias] = useState('');
+  const [showCustomAlias, setShowCustomAlias] = useState(false);
   const [expiresIn, setExpiresIn] = useState('7');
   const [shortUrl, setShortUrl] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,33 +22,30 @@ const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
     setError('');
     setShortUrl('');
 
-    if (!url) {
-      setError('Please enter a URL');
-      return;
-    }
+    const expiresAtSeconds = Number.parseInt(expiresIn, 10) * 24 * 60 * 60;
+    const candidateData = {
+      originalUrl: url,
+      expiresAt: expiresAtSeconds,
+      ...(customAlias ? { customAlias } : {}),
+    };
 
-    // Basic URL validation
-    try {
-      new URL(url);
-    } catch {
-      setError('Please enter a valid URL');
+    const validatedData = urlDataSchema.safeParse(candidateData);
+    if (!validatedData.success) {
+      setError(validatedData.error.issues[0]?.message ?? 'Please enter valid URL details');
       return;
     }
 
     setLoading(true);
 
     try {
-      const expiresAtSeconds = parseInt(expiresIn) * 24 * 60 * 60; // Convert days to seconds
-      
-      const data = await urlService.createUrl({
-        originalUrl: url,
-        expiresAt: expiresAtSeconds,
-      });
+      const data = await urlService.createUrl(validatedData.data);
 
       setShortUrl(urlService.getShortUrl(data.shortId));
       setUrl('');
+      setCustomAlias('');
+      setShowCustomAlias(false);
       onUrlCreated();
-    } catch (err) {
+    } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to create short URL');
     } finally {
       setLoading(false);
@@ -77,6 +77,46 @@ const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
             className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none transition text-sm sm:text-base"
           />
         </div>
+
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => {
+              setShowCustomAlias(!showCustomAlias);
+              if (showCustomAlias) {
+                setCustomAlias('');
+              }
+            }}
+            className={`relative inline-flex h-8 w-16 items-center rounded-full transition-all duration-300 ${
+              showCustomAlias
+                ? 'bg-linear-to-r from-blue-500 to-blue-600 shadow-lg shadow-blue-500/50'
+                : 'bg-gray-300 hover:bg-gray-400'
+            }`}
+          >
+            <span
+              className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-md transition-all duration-300 ${
+                showCustomAlias ? 'translate-x-9' : 'translate-x-1'
+              }`}
+            />
+          </button>
+          <label className="text-sm font-medium text-gray-700 cursor-pointer select-none">
+            Custom Alias
+          </label>
+        </div>
+
+        {showCustomAlias && (
+          <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+            <input
+              type="text"
+              id="customAlias"
+              value={customAlias}
+              onChange={(e) => setCustomAlias(e.target.value.trim())}
+              placeholder="my-resume, awesome-project, etc."
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-sm sm:text-base bg-blue-50/50"
+            />
+            <p className="text-xs text-gray-500 mt-2">Use alphanumeric characters and hyphens only (2-50 characters)</p>
+          </div>
+        )}
 
         <div>
           <label htmlFor="expires" className="block text-sm font-medium text-gray-700 mb-2">

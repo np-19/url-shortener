@@ -2,22 +2,29 @@ import { Request, Response } from "express";
 import { createUrlService } from "../services/url_service.js";
 import { ExpressError } from "../utils/expressError.js";
 import { findUrlByShortIdDB, getAllUrlsDB, getUrlsByUserIdDB, incrementClicksDB } from "../dao/url_dao.js";
-import type { CreateUrlRecord, CreateUrlRequestBody } from "../types/url_types.js";
+import type { CreateUrlRecord } from "../types/url_types.js";
+import { createUrlSchema, type CreateUrlInput } from "../validations/url_val.js";
+import { formatZodError } from "../utils/zodError.js";
+
 
 export const createUrlController = async (
   req: Request, res: Response
 ): Promise<void> => {
+  const urlData = createUrlSchema.safeParse(req.body);
+  if (!urlData.success) {
+    throw new ExpressError(`Validation error: ${formatZodError(urlData.error)}`, 400);
+  }
 
-  const { Url, customAlias }: CreateUrlRequestBody = req.body;
-  const expiresAt = new Date(Date.now() + Url.expiresAt * 1000);
-  if (expiresAt.getTime() <= Date.now()) {
+  const { originalUrl, expiresAt, customAlias }: CreateUrlInput = urlData.data;
+  const expiresAtDate = new Date(Date.now() + expiresAt * 1000);
+  if (expiresAtDate.getTime() <= Date.now()) {
     throw new ExpressError("Expiration time must be in the future", 400);
   }
 
   const userId = req.user?.userId;
   const urlToSave: CreateUrlRecord = {
-    originalUrl: Url.originalUrl,
-    expiresAt,
+    originalUrl,
+    expiresAt: expiresAtDate,
     ...(userId ? { userId } : {}),
   };
 

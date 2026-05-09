@@ -2,16 +2,19 @@ import { Request, Response } from "express";
 import { registerUser, loginUser } from "../services/auth_service.js";
 import { ExpressError } from "../utils/expressError.js";
 import { findUserByIdDB } from "../dao/user_dao.js";
+import { createUserSchema, loginUserSchema } from "../validations/user_val.js";
+import { formatZodError } from "../utils/zodError.js";
 
 export const registerController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { name, email, password } = req.body;
-
-  if (!name || !email || !password) {
-    throw new ExpressError("All fields are required", 400);
+  const createUser = createUserSchema.safeParse(req.body);
+  if (!createUser.success) {
+    throw new ExpressError(`Validation error: ${formatZodError(createUser.error)}`, 400);
   }
+  const { name, email, password } = createUser.data;
+  console.log("Registering user:", { name, email }); // Debug log
 
   try {
     const authResponse = await registerUser(name, email, password);
@@ -32,11 +35,11 @@ export const loginController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    throw new ExpressError("Email and password are required", 400);
+  const loginData = loginUserSchema.safeParse(req.body);
+  if (!loginData.success) {
+    throw new ExpressError(`Validation error: ${formatZodError(loginData.error)}`, 400);
   }
+  const { email, password } = loginData.data;
 
   try {
     const authResponse = await loginUser(email, password);

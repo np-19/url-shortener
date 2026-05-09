@@ -1,38 +1,33 @@
 import constants from '../configs/constants';
+import {
+  apiErrorSchema,
+  authResponseSchema,
+  loginDataSchema,
+  registerDataSchema,
+  userResponseSchema,
+  type AuthResponse,
+  type LoginData,
+  type RegisterData,
+  type UserResponse,
+} from '../schemas/apiSchemas';
 
-export interface RegisterData {
-  name: string;
-  email: string;
-  password: string;
-}
+const getReadableZodError = (error: { issues: Array<{ message: string }> }): string =>
+  error.issues[0]?.message ?? 'Invalid request payload';
 
-export interface LoginData {
-  email: string;
-  password: string;
-}
+const getApiErrorMessage = async (response: Response, fallback: string): Promise<string> => {
+  try {
+    const payload = await response.json();
+    const parsed = apiErrorSchema.safeParse(payload);
 
-export interface AuthResponse {
-  success: boolean;
-  message: string;
-  data: {
-    token: string;
-    user: {
-      id: string;
-      name: string;
-      email: string;
-    };
-  };
-}
+    if (parsed.success) {
+      return parsed.data.message || parsed.data.error || fallback;
+    }
+  } catch {
+    return fallback;
+  }
 
-export interface UserResponse {
-  success: boolean;
-  data: {
-    id: string;
-    name: string;
-    email: string;
-    createdAt: string;
-  };
-}
+  return fallback;
+};
 
 class AuthService {
   private apiUrl: string;
@@ -63,42 +58,60 @@ class AuthService {
 
   // Register new user
   async register(data: RegisterData): Promise<AuthResponse> {
+    const validatedData = registerDataSchema.safeParse(data);
+    if (!validatedData.success) {
+      throw new Error(getReadableZodError(validatedData.error));
+    }
+
     const response = await fetch(`${this.apiUrl}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(validatedData.data),
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Registration failed');
+      throw new Error(await getApiErrorMessage(response, 'Registration failed'));
     }
 
-    const result: AuthResponse = await response.json();
-    this.setToken(result.data.token);
-    return result;
+    const payload = await response.json();
+    const result = authResponseSchema.safeParse(payload);
+    if (!result.success) {
+      throw new Error('Unexpected response format during registration');
+    }
+
+    this.setToken(result.data.data.token);
+    return result.data;
   }
 
   // Login user
   async login(data: LoginData): Promise<AuthResponse> {
+    const validatedData = loginDataSchema.safeParse(data);
+    if (!validatedData.success) {
+      throw new Error(getReadableZodError(validatedData.error));
+    }
+
     const response = await fetch(`${this.apiUrl}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(validatedData.data),
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Login failed');
+      throw new Error(await getApiErrorMessage(response, 'Login failed'));
     }
 
-    const result: AuthResponse = await response.json();
-    this.setToken(result.data.token);
-    return result;
+    const payload = await response.json();
+    const result = authResponseSchema.safeParse(payload);
+    if (!result.success) {
+      throw new Error('Unexpected response format during login');
+    }
+
+    this.setToken(result.data.data.token);
+    return result.data;
   }
 
   // Get current user
@@ -119,10 +132,16 @@ class AuthService {
       if (response.status === 401) {
         this.removeToken();
       }
-      throw new Error('Failed to get user data');
+      throw new Error(await getApiErrorMessage(response, 'Failed to get user data'));
     }
 
-    return response.json();
+    const payload = await response.json();
+    const result = userResponseSchema.safeParse(payload);
+    if (!result.success) {
+      throw new Error('Unexpected response format while fetching user data');
+    }
+
+    return result.data;
   }
 
   // Logout user
@@ -134,3 +153,5 @@ class AuthService {
 const authService = new AuthService();
 
 export default authService;
+
+export type { RegisterData, LoginData, AuthResponse, UserResponse };

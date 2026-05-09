@@ -1,7 +1,7 @@
-import {Document} from "mongoose";
+import { Document, Types } from "mongoose";
 
 export interface ICounter extends Document{
-    _id: string;
+  _id: Types.ObjectId;
     seq: number;
 }
 

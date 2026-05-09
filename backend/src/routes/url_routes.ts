@@ -6,9 +6,6 @@ import { optionalAuth, authenticate } from "../middlewares/auth.js";
 
 const router = Router();
 
-interface UrlParams {
-    shortId: string;
-}
 
 
 router.route("/create")

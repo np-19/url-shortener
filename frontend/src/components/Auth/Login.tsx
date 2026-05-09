@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { loginUser, clearError } from '../../store/slices/authSlice';
 import Button from '../Button';
 import Logo from '../Logo';
+import { loginDataSchema } from '../../schemas/apiSchemas';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -19,13 +20,14 @@ const Login = () => {
     setLocalError('');
     dispatch(clearError());
 
-    if (!email || !password) {
-      setLocalError('All fields are required');
+    const validatedData = loginDataSchema.safeParse({ email, password });
+    if (!validatedData.success) {
+      setLocalError(validatedData.error.issues[0]?.message ?? 'Please enter valid credentials');
       return;
     }
 
     try {
-      await dispatch(loginUser({ email, password })).unwrap();
+      await dispatch(loginUser(validatedData.data)).unwrap();
       navigate('/');
     } catch (err) {
       // Error is already set in Redux state

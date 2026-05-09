@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { registerUser, clearError } from '../../store/slices/authSlice';
 import Button from '../Button';
 import Logo from '../Logo';
+import { registerDataSchema } from '../../schemas/apiSchemas';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -20,18 +21,14 @@ const Register = () => {
     setLocalError('');
     dispatch(clearError());
 
-    if (!name || !email || !password) {
-      setLocalError('All fields are required');
-      return;
-    }
-
-    if (password.length < 6) {
-      setLocalError('Password must be at least 6 characters');
+    const validatedData = registerDataSchema.safeParse({ name, email, password });
+    if (!validatedData.success) {
+      setLocalError(validatedData.error.issues[0]?.message ?? 'Please enter valid registration details');
       return;
     }
 
     try {
-      await dispatch(registerUser({ name, email, password })).unwrap();
+      await dispatch(registerUser(validatedData.data)).unwrap();
       navigate('/');
     } catch (err) {
       // Error is already set in Redux state

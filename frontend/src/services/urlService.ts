@@ -1,28 +1,33 @@
 import constants from '../configs/constants';
 import authService from './authService';
+import {
+  apiErrorSchema,
+  urlDataSchema,
+  urlResponseSchema,
+  urlsResponseSchema,
+  type UrlData,
+  type UrlItem,
+  type UrlResponse,
+  type UrlsResponse,
+} from '../schemas/apiSchemas';
 
-export interface UrlData {
-  originalUrl: string;
-  expiresAt: number; // in seconds
-}
+const getReadableZodError = (error: { issues: Array<{ message: string }> }): string =>
+  error.issues[0]?.message ?? 'Invalid request payload';
 
-export interface UrlResponse {
-  shortId: string;
-}
+const getApiErrorMessage = async (response: Response, fallback: string): Promise<string> => {
+  try {
+    const payload = await response.json();
+    const parsed = apiErrorSchema.safeParse(payload);
 
-export interface UrlItem {
-  _id: string;
-  originalUrl: string;
-  shortId: string;
-  clicks: number;
-  createdAt: string;
-  expiresAt: string;
-  userId?: string;
-}
+    if (parsed.success) {
+      return parsed.data.message || parsed.data.error || fallback;
+    }
+  } catch {
+    return fallback;
+  }
 
-export interface UrlsResponse {
-  urls: UrlItem[];
-}
+  return fallback;
+};
 
 class UrlService {
   private apiUrl: string;
@@ -34,6 +39,11 @@ class UrlService {
   }
 
   async createUrl(urlData: UrlData): Promise<UrlResponse> {
+    const validatedData = urlDataSchema.safeParse(urlData);
+    if (!validatedData.success) {
+      throw new Error(getReadableZodError(validatedData.error));
+    }
+
     const token = authService.getToken();
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
@@ -44,32 +54,46 @@ class UrlService {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
+    const body = validatedData.data;
+
+
+
     const response = await fetch(`${this.apiUrl}/create`, {
       method: 'POST',
       headers,
-      body: JSON.stringify({
-        Url: {
-          originalUrl: urlData.originalUrl,
-          expiresAt: urlData.expiresAt,
-        },
-      }),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to create short URL');
+      if (response.status === 409) {
+        throw new Error('Custom alias is already in use. Please choose a different one.');
+      }
+      throw new Error(await getApiErrorMessage(response, 'Failed to create short URL'));
     }
 
-    return response.json();
+    const payload = await response.json();
+    const result = urlResponseSchema.safeParse(payload);
+    if (!result.success) {
+      throw new Error('Unexpected response format while creating short URL');
+    }
+
+    return result.data;
   }
 
   async getAllUrls(): Promise<UrlsResponse> {
     const response = await fetch(`${this.apiUrl}/urls`);
 
     if (!response.ok) {
-      throw new Error('Failed to fetch URLs');
+      throw new Error(await getApiErrorMessage(response, 'Failed to fetch URLs'));
     }
 
-    return response.json();
+    const payload = await response.json();
+    const result = urlsResponseSchema.safeParse(payload);
+    if (!result.success) {
+      throw new Error(result.error.issues[0]?.message ?? 'Unexpected response format while fetching URLs');
+    }
+
+    return result.data;
   }
 
   async getMyUrls(): Promise<UrlsResponse> {
@@ -86,10 +110,16 @@ class UrlService {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch URLs');
+      throw new Error(await getApiErrorMessage(response, 'Failed to fetch URLs'));
     }
 
-    return response.json();
+    const payload = await response.json();
+    const result = urlsResponseSchema.safeParse(payload);
+    if (!result.success) {
+      throw new Error(result.error.issues[0]?.message ?? 'Unexpected response format while fetching your URLs');
+    }
+
+    return result.data;
   }
 
   getShortUrl(shortId: string): string {
@@ -100,3 +130,5 @@ class UrlService {
 const urlService = new UrlService();
 
 export default urlService;
+
+export type { UrlData, UrlItem, UrlResponse, UrlsResponse };

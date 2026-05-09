@@ -18,7 +18,7 @@ export const authenticate = (
 
     try {
       const decoded = verifyToken(token);
-      (req as any).user = decoded;
+      req.user = decoded;
       next();
     } catch (error) {
       throw new ExpressError("Invalid or expired token", 401);
@@ -33,20 +33,23 @@ export const optionalAuth = (
   res: Response,
   next: NextFunction
 ): void => {
-  try {
-    const authHeader = req.headers.authorization;
-
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      const token = authHeader.split(" ")[1];
-      try {
-        const decoded = verifyToken(token);
-        (req as any).user = decoded;
-      } catch (error) {
-        // Token is invalid but continue without auth
-      }
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    const token = authHeader.split(" ")[1];
+    try {
+      const decoded = verifyToken(token);
+      req.user = decoded;
+    } catch (error) {
+      // If token is invalid, we simply ignore it and proceed without authentication
     }
-    next();
-  } catch (error) {
-    next(error);
   }
+  next();
 };
+
+export const authorize = (req: Request, res: Response, next: NextFunction): void => {
+  if (!req.user) {
+    return next(new ExpressError("Unauthorized", 401));
+  }
+  next();
+};
+
