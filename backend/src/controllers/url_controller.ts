@@ -44,7 +44,7 @@ export const redirectUrlController = async (
   // Cache-Aside Pattern: Check cache first
   const cached = await getCachedUrl(shortId);
 
-  let originalUrl: string | undefined;
+  let originalUrl: string = "";
 
   if (cached) {
     originalUrl = cached.originalUrl;
@@ -54,15 +54,17 @@ export const redirectUrlController = async (
 
     originalUrl = url.originalUrl;
 
-    // Populate cache using DB expiresAt
-    await setCachedUrl(shortId, originalUrl, url.expiresAt);
+    // Populate cache after the redirect path is done to avoid blocking the response
+    void setCachedUrl(shortId, originalUrl, url.expiresAt);
   }
 
-  // Increment cached clicks (fast) and persist in DB as well
-  await incrementCachedClicks(shortId);
+  res.redirect(originalUrl);
 
-  await incrementClicksDB(shortId);
-  res.redirect(originalUrl as string);
+  // Update counters after the response has already been sent
+  setImmediate(() => {
+    void incrementCachedClicks(shortId);
+    void incrementClicksDB(shortId);
+  });
   return;
 };
 
