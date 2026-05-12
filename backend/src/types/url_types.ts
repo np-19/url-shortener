@@ -4,4 +4,10 @@ export interface CreateUrlRecord { //stored in DB
   userId?: string;
 }
 
+export interface CachedUrl {
+	originalUrl: string;
+	clicks: number;
+}
+
+
 

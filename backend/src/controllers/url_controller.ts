@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { createUrlService } from "../services/url_service.js";
 import { ExpressError } from "../utils/expressError.js";
 import { findUrlByShortIdDB, getAllUrlsDB, getUrlsByUserIdDB, incrementClicksDB } from "../dao/url_dao.js";
+import { getCachedUrl, setCachedUrl, incrementCachedClicks } from "../services/cache_service.js";
 import type { CreateUrlRecord } from "../types/url_types.js";
 import { createUrlSchema, type CreateUrlInput } from "../validations/url_val.js";
 import { formatZodError } from "../utils/zodError.js";
@@ -29,6 +30,8 @@ export const createUrlController = async (
   };
 
   const shortId = await createUrlService(urlToSave, customAlias);
+  // Store in cache with TTL based on expiresAt so Redis auto-evicts
+  await setCachedUrl(shortId, urlToSave.originalUrl, urlToSave.expiresAt);
   res.status(201).send({ shortId });
   return;
 };
@@ -37,10 +40,29 @@ export const redirectUrlController = async (
   req: Request, res: Response
 ): Promise<void> => {
   const { shortId } = req.params;
-  const url = await findUrlByShortIdDB(shortId);
-  if (!url) throw new ExpressError("URL not found", 404);
+  
+  // Cache-Aside Pattern: Check cache first
+  const cached = await getCachedUrl(shortId);
+
+  let originalUrl: string | undefined;
+
+  if (cached) {
+    originalUrl = cached.originalUrl;
+  } else {
+    const url = await findUrlByShortIdDB(shortId);
+    if (!url) throw new ExpressError("URL not found", 404);
+
+    originalUrl = url.originalUrl;
+
+    // Populate cache using DB expiresAt
+    await setCachedUrl(shortId, originalUrl, url.expiresAt);
+  }
+
+  // Increment cached clicks (fast) and persist in DB as well
+  await incrementCachedClicks(shortId);
+
   await incrementClicksDB(shortId);
-  res.redirect(url.originalUrl);
+  res.redirect(originalUrl as string);
   return;
 };
 
