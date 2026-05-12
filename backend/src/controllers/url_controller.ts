@@ -36,14 +36,10 @@ export const createUrlController = async (
   return;
 };
 
-export const redirectUrlController = async (
-  req: Request, res: Response
-): Promise<void> => {
+export const redirectUrlController = async (req: Request, res: Response): Promise<void> => {
   const { shortId } = req.params;
   
-  // Cache-Aside Pattern: Check cache first
   const cached = await getCachedUrl(shortId);
-
   let originalUrl: string = "";
 
   if (cached) {
@@ -51,21 +47,31 @@ export const redirectUrlController = async (
   } else {
     const url = await findUrlByShortIdDB(shortId);
     if (!url) throw new ExpressError("URL not found", 404);
-
     originalUrl = url.originalUrl;
 
-    // Populate cache after the redirect path is done to avoid blocking the response
-    void setCachedUrl(shortId, originalUrl, url.expiresAt);
+    // Background task: Populate cache
+    setImmediate(async () => {
+      try { await setCachedUrl(shortId, originalUrl, url.expiresAt); } 
+      catch (e) { console.error("Cache population failed", e); }
+    });
   }
 
+  // 1. Send the redirect first for speed
   res.redirect(originalUrl);
 
-  // Update counters after the response has already been sent
-  setImmediate(() => {
-    void incrementCachedClicks(shortId);
-    void incrementClicksDB(shortId);
+  // 2. Wrap background updates in an async block with error handling
+  setImmediate(async () => {
+    try {
+      // Run these in parallel to be efficient
+      await Promise.all([
+        incrementCachedClicks(shortId),
+        incrementClicksDB(shortId)
+      ]);
+    } catch (error) {
+      // Log this to a service like Sentry or Winston
+      console.error(`Analytics update failed for ${shortId}:`, error);
+    }
   });
-  return;
 };
 
 export const getAllUrlsController = async (
