@@ -115,6 +115,8 @@ const urlItemSchema = z
 export const urlsResponseSchema = z
   .object({
     urls: z.array(urlItemSchema),
+    nextCursor: z.string().nullable().optional(),
+    hasMore: z.boolean().optional(),
   })
   .strict();
 

@@ -23,7 +23,7 @@ const startServer = async (): Promise<void> => {
   await rebuildBloomFromDatabase();
 
   // Initialize analytics heap with all URLs
-  const allUrls = await getAllUrlsDB();
+  const allUrls = await getAllUrlsDB(undefined, 100);
   await rebuildTrendingUrls(allUrls);
 
 

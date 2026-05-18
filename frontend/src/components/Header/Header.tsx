@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { logoutUser } from '../../store/slices/authSlice';
-import Container from '../Container/Container';
 import Logo from '../Logo';
 import Button from '../Button';
 
@@ -38,8 +37,8 @@ const Header = ({}: HeaderProps) => {
   };
 
   return (
-    <header className="py-3 sm:py-4 shadow-lg bg-white border-b border-gray-200 sticky top-0 z-50 transition-all duration-300">
-      <Container>
+    <header className={`py-2 sm:py-3 px-4 sm:px-6 glass-header sticky top-4 z-50 transition-all duration-300 max-w-5xl mx-auto w-[95%] ${isMobileMenuOpen ? 'rounded-[2rem]' : 'rounded-full'}`}>
+      <div className="w-full">
         <nav className="flex items-center justify-between">
           <div className="mr-4">
             <Link to="/" onClick={closeMobileMenu}>
@@ -48,22 +47,22 @@ const Header = ({}: HeaderProps) => {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-2 lg:gap-4">
+          <div className="hidden md:flex items-center gap-1 lg:gap-2">
             <Link
               to="/"
-              className="text-gray-700 hover:text-gray-900 font-medium transition-colors px-3 lg:px-4 py-2 rounded-lg hover:bg-gray-100 text-sm lg:text-base"
+              className="text-silver-600 hover:text-silver-900 font-medium transition-colors px-3 lg:px-4 py-2 rounded-full hover:bg-beige-100 text-sm lg:text-base"
             >
               Home
             </Link>
             <Link
               to="/dashboard"
-              className="text-gray-700 hover:text-gray-900 font-medium transition-colors px-3 lg:px-4 py-2 rounded-lg hover:bg-gray-100 text-sm lg:text-base"
+              className="text-silver-600 hover:text-silver-900 font-medium transition-colors px-3 lg:px-4 py-2 rounded-full hover:bg-beige-100 text-sm lg:text-base"
             >
               Dashboard
             </Link>
             <Link
               to="/analytics"
-              className="text-gray-700 hover:text-gray-900 font-medium transition-colors px-3 lg:px-4 py-2 rounded-lg hover:bg-gray-100 text-sm lg:text-base"
+              className="text-silver-600 hover:text-silver-900 font-medium transition-colors px-3 lg:px-4 py-2 rounded-full hover:bg-beige-100 text-sm lg:text-base"
             >
               Analytics
             </Link>
@@ -72,14 +71,14 @@ const Header = ({}: HeaderProps) => {
               <>
                 <Link
                   to="/my-urls"
-                  className="text-gray-700 hover:text-gray-900 font-medium transition-colors px-3 lg:px-4 py-2 rounded-lg hover:bg-gray-100 text-sm lg:text-base"
+                  className="text-silver-600 hover:text-silver-900 font-medium transition-colors px-3 lg:px-4 py-2 rounded-full hover:bg-beige-100 text-sm lg:text-base"
                 >
                   My URLs
                 </Link>
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-800 text-white hover:bg-gray-900 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+                    className="flex items-center justify-center w-10 h-10 rounded-full bg-forest-50 border border-forest-200 text-forest-600 hover:bg-forest-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-forest-400 focus:ring-offset-2"
                     aria-label="User menu"
                   >
                     <svg
@@ -99,18 +98,18 @@ const Header = ({}: HeaderProps) => {
 
                   {/* Dropdown Menu */}
                   {isDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50 animate-fadeIn">
-                      <div className="px-4 py-3 border-b border-gray-100">
-                        <p className="text-sm font-semibold text-gray-900">
+                    <div className="absolute right-0 mt-3 w-56 glass-dropdown rounded-2xl border border-silver-200 py-2 z-50 animate-scaleIn origin-top-right">
+                      <div className="px-4 py-3 border-b border-silver-100">
+                        <p className="text-sm font-semibold text-silver-800">
                           {user?.name}
                         </p>
-                        <p className="text-xs text-gray-500 truncate">
+                        <p className="text-xs text-silver-500 truncate">
                           {user?.email}
                         </p>
                       </div>
                       <button
                         onClick={handleLogout}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors flex items-center gap-2"
+                        className="w-full text-left px-4 py-2 text-sm text-apple-600 hover:bg-apple-50 transition-colors flex items-center gap-2 mt-1"
                       >
                         <svg
                           className="w-4 h-4"
@@ -135,7 +134,7 @@ const Header = ({}: HeaderProps) => {
               <>
                 <Link
                   to="/login"
-                  className="text-gray-700 hover:text-gray-900 font-medium transition-colors px-3 lg:px-4 py-2 rounded-lg hover:bg-gray-100 text-sm lg:text-base"
+                  className="text-silver-600 hover:text-silver-900 font-medium transition-colors px-3 lg:px-4 py-2 rounded-full hover:bg-beige-100 text-sm lg:text-base mr-2"
                 >
                   Login
                 </Link>
@@ -151,7 +150,7 @@ const Header = ({}: HeaderProps) => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 text-gray-700 hover:text-gray-900 focus:outline-none"
+            className="md:hidden p-2 text-silver-600 hover:text-silver-900 focus:outline-none"
             aria-label="Toggle menu"
           >
             <svg
@@ -181,25 +180,25 @@ const Header = ({}: HeaderProps) => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t border-gray-200 pt-4 animate-fadeIn">
+          <div className="md:hidden mt-4 pb-4 border-t border-silver-200 pt-4 animate-fadeIn">
             <div className="flex flex-col space-y-2">
               <Link
                 to="/"
-                className="text-gray-700 hover:text-gray-900 font-medium transition-colors px-4 py-2 rounded-lg hover:bg-gray-100"
+                className="text-silver-600 hover:text-silver-900 font-medium transition-colors px-4 py-2 rounded-xl hover:bg-beige-100"
                 onClick={closeMobileMenu}
               >
                 Home
               </Link>
               <Link
                 to="/dashboard"
-                className="text-gray-700 hover:text-gray-900 font-medium transition-colors px-4 py-2 rounded-lg hover:bg-gray-100"
+                className="text-silver-600 hover:text-silver-900 font-medium transition-colors px-4 py-2 rounded-xl hover:bg-beige-100"
                 onClick={closeMobileMenu}
               >
                 Dashboard
               </Link>
               <Link
                 to="/analytics"
-                className="text-gray-700 hover:text-gray-900 font-medium transition-colors px-4 py-2 rounded-lg hover:bg-gray-100"
+                className="text-silver-600 hover:text-silver-900 font-medium transition-colors px-4 py-2 rounded-xl hover:bg-beige-100"
                 onClick={closeMobileMenu}
               >
                 Analytics
@@ -209,22 +208,22 @@ const Header = ({}: HeaderProps) => {
                 <>
                   <Link
                     to="/my-urls"
-                    className="text-gray-700 hover:text-gray-900 font-medium transition-colors px-4 py-2 rounded-lg hover:bg-gray-100"
+                    className="text-silver-600 hover:text-silver-900 font-medium transition-colors px-4 py-2 rounded-xl hover:bg-beige-100"
                     onClick={closeMobileMenu}
                   >
                     My URLs
                   </Link>
-                  <div className="px-4 py-3 bg-gray-50 rounded-lg">
-                    <p className="text-sm font-semibold text-gray-900">
+                  <div className="px-4 py-3 bg-beige-50 border border-silver-200 rounded-xl mt-2">
+                    <p className="text-sm font-semibold text-silver-800">
                       {user?.name}
                     </p>
-                    <p className="text-xs text-gray-500 truncate">
+                    <p className="text-xs text-silver-500 truncate">
                       {user?.email}
                     </p>
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="text-left text-gray-700 hover:text-gray-900 font-medium transition-colors px-4 py-2 rounded-lg hover:bg-gray-100 flex items-center gap-2"
+                    className="text-left text-apple-600 hover:text-apple-700 font-medium transition-colors px-4 py-2 rounded-xl hover:bg-apple-50 flex items-center gap-2 mt-1"
                   >
                     <svg
                       className="w-4 h-4"
@@ -246,12 +245,12 @@ const Header = ({}: HeaderProps) => {
                 <>
                   <Link
                     to="/login"
-                    className="text-gray-700 hover:text-gray-900 font-medium transition-colors px-4 py-2 rounded-lg hover:bg-gray-100"
+                    className="text-silver-600 hover:text-silver-900 font-medium transition-colors px-4 py-2 rounded-xl hover:bg-beige-100"
                     onClick={closeMobileMenu}
                   >
                     Login
                   </Link>
-                  <Link to="/register" onClick={closeMobileMenu}>
+                  <Link to="/register" onClick={closeMobileMenu} className="mt-2 block">
                     <Button className="w-full text-center">Sign Up</Button>
                   </Link>
                 </>
@@ -259,7 +258,7 @@ const Header = ({}: HeaderProps) => {
             </div>
           </div>
         )}
-      </Container>
+      </div>
     </header>
   );
 };

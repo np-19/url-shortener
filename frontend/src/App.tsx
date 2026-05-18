@@ -14,7 +14,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-800"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-forest-500"></div>
       </div>
     );
   }
@@ -33,7 +33,7 @@ const GuestRoute = ({ children }: { children: React.ReactElement }) => {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-800"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-forest-500"></div>
       </div>
     );
   }
@@ -49,7 +49,8 @@ const AppContent = () => {
   }, [dispatch]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-beige-50 text-silver-800 flex flex-col font-sans selection:bg-forest-500/20 relative">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white via-beige-50 to-beige-100 -z-10"></div>
       <Header />
 
       <main className="flex-1 py-6 sm:py-8 lg:py-12">

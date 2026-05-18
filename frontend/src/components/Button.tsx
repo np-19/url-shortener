@@ -11,8 +11,8 @@ interface ButtonProps {
 const Button = ({
   children,
   type = 'button',
-  bgColor = 'bg-gray-800 hover:bg-gray-900',
-  textColor = 'text-white',
+  bgColor = 'bg-white hover:bg-beige-50 shadow-soft border border-silver-200',
+  textColor = 'text-silver-800',
   className = '',
   disabled = false,
   onClick,
@@ -23,7 +23,7 @@ const Button = ({
       type={type}
       disabled={disabled}
       onClick={onClick}
-      className={`${bgColor} ${textColor} ${className} rounded-lg py-2 sm:py-2.5 px-4 sm:px-6 hover:shadow-lg transition-all duration-300 font-semibold text-sm sm:text-base ${
+      className={`flex justify-center items-center ${bgColor} ${textColor} ${className} rounded-full py-2 sm:py-2.5 px-6 sm:px-8 transition-all duration-300 font-medium text-sm sm:text-base hover-glow ${
         disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
       }`}
       {...props}

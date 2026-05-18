@@ -17,17 +17,22 @@ export const findUrlByShortIdDB = async (shortId: string) : Promise<IUrl | null>
     return url;
 }
 
-export const getAllUrlsDB = async () : Promise<IUrl[]> => {
-    const urls: IUrl[] = await UrlModel.find()
-        .sort({ createdAt: -1 })
-        .limit(100);
+export const getAllUrlsDB = async (cursor?: string, limit: number = 20) : Promise<IUrl[]> => {
+    const query = cursor ? { _id: { $lt: cursor } } : {};
+    const urls: IUrl[] = await UrlModel.find(query)
+        .sort({ _id: -1 })
+        .limit(limit);
     return urls;
 }
 
-export const getUrlsByUserIdDB = async (userId: string) : Promise<IUrl[]> => {
-    const urls: IUrl[] = await UrlModel.find({ userId })
-        .sort({ createdAt: -1 })
-        .limit(100);
+export const getUrlsByUserIdDB = async (userId: string, cursor?: string, limit: number = 20) : Promise<IUrl[]> => {
+    const query: any = { userId };
+    if (cursor) {
+        query._id = { $lt: cursor };
+    }
+    const urls: IUrl[] = await UrlModel.find(query)
+        .sort({ _id: -1 })
+        .limit(limit);
     return urls;
 }
 

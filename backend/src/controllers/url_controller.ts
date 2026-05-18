@@ -90,8 +90,14 @@ export const redirectUrlController = async (req: Request, res: Response): Promis
 export const getAllUrlsController = async (
   req: Request, res: Response
 ): Promise<void> => {
-  const urls = await getAllUrlsDB();
-  res.status(200).json({ urls });
+  const cursor = req.query.cursor as string | undefined;
+  const limit = parseInt(req.query.limit as string) || 20;
+
+  const urls = await getAllUrlsDB(cursor, limit);
+  const hasMore = urls.length === limit;
+  const nextCursor = hasMore ? urls[urls.length - 1]._id : null;
+
+  res.status(200).json({ urls, nextCursor, hasMore });
   return;
 };
 
@@ -102,15 +108,23 @@ export const getMyUrlsController = async (
   if (!userId) {
     throw new ExpressError("Unauthorized", 401);
   }
-  const urls = await getUrlsByUserIdDB(userId);
-  res.status(200).json({ urls });
+
+  const cursor = req.query.cursor as string | undefined;
+  const limit = parseInt(req.query.limit as string) || 20;
+
+  const urls = await getUrlsByUserIdDB(userId, cursor, limit);
+  const hasMore = urls.length === limit;
+  const nextCursor = hasMore ? urls[urls.length - 1]._id : null;
+
+  res.status(200).json({ urls, nextCursor, hasMore });
   return;
 };
 
 export const getAnalyticsController = async (
   req: Request, res: Response
 ): Promise<void> => {
-  const allUrls = await getAllUrlsDB();
+  // Fetch up to 100 URLs for analytics computations
+  const allUrls = await getAllUrlsDB(undefined, 100);
   await rebuildTrendingUrls(allUrls);
   const analytics = getAnalyticsSummary(allUrls);
   res.status(200).json(analytics);

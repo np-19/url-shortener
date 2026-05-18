@@ -77,8 +77,9 @@ class UrlService {
     }
   }
 
-  async getAllUrls(): Promise<UrlsResponse> {
-    const response = await apiClient.get('/urls');
+  async getAllUrls(cursor?: string): Promise<UrlsResponse> {
+    const queryParams = cursor ? `?cursor=${cursor}` : '';
+    const response = await apiClient.get(`/urls${queryParams}`);
     const payload = response.data;
     const result = urlsResponseSchema.safeParse(payload);
     if (!result.success) {
@@ -88,7 +89,7 @@ class UrlService {
     return result.data;
   }
 
-  async getMyUrls(): Promise<UrlsResponse> {
+  async getMyUrls(cursor?: string): Promise<UrlsResponse> {
     const token = authService.getToken();
 
     if (!token) {
@@ -96,7 +97,8 @@ class UrlService {
     }
 
     try {
-      const response = await apiClient.get('/my-urls', {
+      const queryParams = cursor ? `?cursor=${cursor}` : '';
+      const response = await apiClient.get(`/my-urls${queryParams}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
