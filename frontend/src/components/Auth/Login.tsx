@@ -40,7 +40,7 @@ const Login = () => {
     <div className="flex flex-col lg:flex-row min-h-[85vh] bg-transparent animate-fadeIn">
       {/* Left Graphic Section (Hidden on mobile/tablet) */}
       <div className="hidden lg:flex w-1/2 flex-col justify-center items-start p-16 relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-beige-100 to-white rounded-[3rem] shadow-soft -z-10 m-6"></div>
+        <div className="absolute inset-0 bg-linear-to-br from-beige-100 to-white rounded-[3rem] shadow-soft -z-10 m-6"></div>
         <div className="relative z-10 max-w-lg">
           <div className="bg-white p-4 rounded-2xl inline-block mb-8 shadow-sm">
             <Logo width="140px" variant="text" />
@@ -55,8 +55,8 @@ const Login = () => {
           
           <div className="mt-12 flex gap-4">
              <div className="bg-white/80 backdrop-blur p-4 rounded-2xl shadow-sm border border-silver-100 flex items-center gap-4">
-                <div className="bg-blue-50 p-2.5 rounded-xl">
-                  <svg className="w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                <div className="bg-forest-50 p-2.5 rounded-xl">
+                  <svg className="w-6 h-6 text-forest-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                 </div>
                 <div>
                   <p className="text-sm font-bold text-silver-900">Lightning Fast</p>
@@ -70,7 +70,7 @@ const Login = () => {
       {/* Right Form Section */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
         <div className="w-full max-w-md bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 sm:p-10 shadow-[0_20px_60px_-15px_rgba(107,114,128,0.15)] border border-white relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-silver-300 via-silver-400 to-silver-300"></div>
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-linear-to-r from-forest-200 via-forest-500 to-forest-200"></div>
           
           <div className="lg:hidden mb-8 flex justify-center">
             <Logo width="120px" variant="text" />

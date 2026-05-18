@@ -11,8 +11,8 @@ interface ButtonProps {
 const Button = ({
   children,
   type = 'button',
-  bgColor = 'bg-white hover:bg-beige-50 shadow-soft border border-silver-200',
-  textColor = 'text-silver-800',
+  bgColor = 'bg-forest-500 hover:bg-forest-600 shadow-soft border border-forest-500/10',
+  textColor = 'text-white',
   className = '',
   disabled = false,
   onClick,

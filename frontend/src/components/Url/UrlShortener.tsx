@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { urlService } from '../../services';
 import Toast from '../Toast';
 import { urlDataSchema } from '../../schemas/apiSchemas';
@@ -12,10 +12,44 @@ const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
   const [customAlias, setCustomAlias] = useState('');
   const [showCustomAlias, setShowCustomAlias] = useState(false);
   const [expiresIn, setExpiresIn] = useState('7');
+  const [showExpiresOptions, setShowExpiresOptions] = useState(false);
   const [shortUrl, setShortUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+  const expiresMenuRef = useRef<HTMLDivElement | null>(null);
+
+  const expiresOptions = [
+    { value: '1', label: '1 day' },
+    { value: '7', label: '7 days' },
+    { value: '30', label: '30 days' },
+    { value: '90', label: '90 days' },
+    { value: '365', label: '1 year' },
+  ];
+
+  const selectedExpiresLabel = expiresOptions.find((option) => option.value === expiresIn)?.label ?? '7 days';
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (expiresMenuRef.current && !expiresMenuRef.current.contains(event.target as Node)) {
+        setShowExpiresOptions(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setShowExpiresOptions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,8 +92,7 @@ const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
   };
 
   return (
-    <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-6 sm:p-8 lg:p-10 mx-auto relative overflow-hidden animate-scaleIn shadow-[0_20px_60px_-15px_rgba(107,114,128,0.15)] border border-white">
-      <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-silver-300 via-silver-400 to-silver-300"></div>
+    <div className="relative z-30 bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-6 sm:p-8 lg:p-10 mx-auto overflow-visible animate-scaleIn shadow-[0_20px_60px_-15px_rgba(107,114,128,0.15)] border border-white">
       <h2 className="font-extrabold text-silver-900 mb-6 sm:mb-8 tracking-tight" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)' }}>
         Shorten Your URL
       </h2>
@@ -90,8 +123,8 @@ const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
             }}
             className={`relative inline-flex h-7 w-12 sm:h-8 sm:w-14 items-center rounded-full transition-all duration-300 ${
               showCustomAlias
-                ? 'bg-silver-800 shadow-[0_0_10px_rgba(107,114,128,0.2)]'
-                : 'bg-silver-200 hover:bg-silver-300'
+                ? 'bg-forest-500 shadow-[0_0_10px_rgba(53,144,77,0.25)]'
+                : 'bg-forest-100 hover:bg-forest-200'
             }`}
           >
             <span
@@ -119,23 +152,51 @@ const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
           </div>
         )}
 
-        <div>
+        <div ref={expiresMenuRef} className="relative">
           <label htmlFor="expires" className="block text-sm font-semibold text-silver-700 mb-2">
             Expires in (days)
           </label>
-          <select
-            id="expires"
-            value={expiresIn}
-            onChange={(e) => setExpiresIn(e.target.value)}
-            className="w-full px-5 py-3 bg-white border border-silver-200 rounded-2xl focus:ring-4 focus:ring-silver-200 focus:border-silver-400 outline-none transition-all text-silver-900 font-medium text-sm sm:text-base shadow-sm appearance-none cursor-pointer hover:border-silver-300"
-            style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236b7280%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1.25rem top 50%', backgroundSize: '0.65rem auto' }}
+          <button
+            type="button"
+            onClick={() => setShowExpiresOptions((current) => !current)}
+            aria-haspopup="listbox"
+            aria-expanded={showExpiresOptions}
+            className="flex w-full items-center justify-between gap-3 px-5 py-3 bg-white border border-silver-200 rounded-2xl focus:ring-4 focus:ring-silver-200 focus:border-silver-400 outline-none transition-all text-silver-900 font-medium text-sm sm:text-base shadow-sm hover:border-silver-300"
           >
-            <option value="1">1 day</option>
-            <option value="7">7 days</option>
-            <option value="30">30 days</option>
-            <option value="90">90 days</option>
-            <option value="365">1 year</option>
-          </select>
+            <span>{selectedExpiresLabel}</span>
+            <svg className={`h-4 w-4 text-silver-500 transition-transform ${showExpiresOptions ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="none" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M6 8l4 4 4-4" />
+            </svg>
+          </button>
+
+          {showExpiresOptions && (
+            <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-silver-200 bg-white shadow-[0_20px_40px_-20px_rgba(15,23,42,0.35)]">
+              <div className="p-1">
+                {expiresOptions.map((option) => {
+                  const isActive = option.value === expiresIn;
+
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => {
+                        setExpiresIn(option.value);
+                        setShowExpiresOptions(false);
+                      }}
+                      className={`flex w-full items-center justify-between rounded-xl px-4 py-2.5 text-left text-sm sm:text-base transition-colors ${
+                        isActive
+                          ? 'bg-forest-500 text-white'
+                          : 'text-silver-700 hover:bg-forest-50 hover:text-forest-700'
+                      }`}
+                    >
+                      <span>{option.label}</span>
+                      {isActive && <span className="text-xs font-semibold uppercase tracking-[0.2em] text-white/75">Selected</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         {error && (
@@ -147,7 +208,7 @@ const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex justify-center items-center bg-silver-900 hover:bg-silver-800 text-white font-semibold py-3.5 sm:py-4 px-6 rounded-2xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base mt-4 shadow-soft hover:-translate-y-0.5"
+          className="w-full flex justify-center items-center bg-forest-500 hover:bg-forest-600 text-white font-semibold py-3.5 sm:py-4 px-6 rounded-2xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base mt-4 shadow-soft hover:-translate-y-0.5"
         >
           {loading ? (
             <span className="flex items-center gap-2">

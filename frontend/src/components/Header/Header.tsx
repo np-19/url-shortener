@@ -37,7 +37,7 @@ const Header = ({}: HeaderProps) => {
   };
 
   return (
-    <header className={`py-2 sm:py-3 px-4 sm:px-6 glass-header sticky top-4 z-50 transition-all duration-300 max-w-5xl mx-auto w-[95%] ${isMobileMenuOpen ? 'rounded-[2rem]' : 'rounded-full'}`}>
+    <header className={`py-2 sm:py-3 px-4 sm:px-6 glass-header sticky top-4 z-50 transition-all duration-300 max-w-5xl mx-auto w-[95%] ${isMobileMenuOpen ? 'rounded-4xl' : 'rounded-full'}`}>
       <div className="w-full">
         <nav className="flex items-center justify-between">
           <div className="mr-4">
@@ -78,7 +78,7 @@ const Header = ({}: HeaderProps) => {
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="flex items-center justify-center w-10 h-10 rounded-full bg-forest-50 border border-forest-200 text-forest-600 hover:bg-forest-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-forest-400 focus:ring-offset-2"
+                    className="flex items-center justify-center w-10 h-10 rounded-full bg-forest-500 border border-forest-500/10 text-white hover:bg-forest-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-forest-400 focus:ring-offset-2"
                     aria-label="User menu"
                   >
                     <svg
@@ -98,9 +98,9 @@ const Header = ({}: HeaderProps) => {
 
                   {/* Dropdown Menu */}
                   {isDropdownOpen && (
-                    <div className="absolute right-0 mt-3 w-56 glass-dropdown rounded-2xl border border-silver-200 py-2 z-50 animate-scaleIn origin-top-right">
-                      <div className="px-4 py-3 border-b border-silver-100">
-                        <p className="text-sm font-semibold text-silver-800">
+                    <div className="absolute right-0 mt-3 w-56 glass-dropdown rounded-2xl border border-forest-200/70 py-2 z-50 animate-scaleIn origin-top-right ring-1 ring-forest-500/10">
+                      <div className="px-4 py-3 border-b border-forest-100 bg-forest-50/40">
+                        <p className="text-sm font-semibold text-forest-700">
                           {user?.name}
                         </p>
                         <p className="text-xs text-silver-500 truncate">
@@ -109,7 +109,7 @@ const Header = ({}: HeaderProps) => {
                       </div>
                       <button
                         onClick={handleLogout}
-                        className="w-full text-left px-4 py-2 text-sm text-apple-600 hover:bg-apple-50 transition-colors flex items-center gap-2 mt-1"
+                        className="w-full text-left px-4 py-2 text-sm text-apple-600 hover:bg-forest-50 transition-colors flex items-center gap-2 mt-1"
                       >
                         <svg
                           className="w-4 h-4"

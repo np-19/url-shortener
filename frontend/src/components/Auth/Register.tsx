@@ -41,7 +41,7 @@ const Register = () => {
     <div className="flex flex-col lg:flex-row min-h-[85vh] bg-transparent animate-fadeIn">
       {/* Left Graphic Section (Hidden on mobile/tablet) */}
       <div className="hidden lg:flex w-1/2 flex-col justify-center items-start p-16 relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-beige-100 to-white rounded-[3rem] shadow-soft -z-10 m-6"></div>
+        <div className="absolute inset-0 bg-linear-to-br from-beige-100 to-white rounded-[3rem] shadow-soft -z-10 m-6"></div>
         <div className="relative z-10 max-w-lg">
           <div className="bg-white p-4 rounded-2xl inline-block mb-8 shadow-sm">
             <Logo width="140px" variant="text" />
@@ -71,7 +71,7 @@ const Register = () => {
       {/* Right Form Section */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
         <div className="w-full max-w-md bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 sm:p-10 shadow-[0_20px_60px_-15px_rgba(107,114,128,0.15)] border border-white relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-silver-300 via-silver-400 to-silver-300"></div>
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-linear-to-r from-forest-200 via-forest-500 to-forest-200"></div>
           
           <div className="lg:hidden mb-8 flex justify-center">
             <Logo width="120px" variant="text" />
