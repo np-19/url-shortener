@@ -16,6 +16,19 @@ const redisPort: number = Number(process.env.REDIS_PORT) || 6379;
 const redisUsername: string = String(process.env.REDIS_USERNAME || 'default');
 const redisPassword: string = String(process.env.REDIS_PASSWORD || '');
 
+// Bloom Filter Configuration
+const bloomEstimatedUrls: number = Number(process.env.BLOOM_ESTIMATED_URLS || 1_000_000);
+const bloomBits: number = Number(process.env.BLOOM_BITS || 10_000_000);
+const bloomHashFunctions: number = Number(process.env.BLOOM_HASH_FUNCTIONS || 7);
+const bloomRebuildIntervalMs: number = Number(process.env.BLOOM_REBUILD_INTERVAL_MS || 3_600_000); // 1 hour
+
+// Rate Limiter Configuration
+const rateLimitWindowMs: number = Number(process.env.RATE_LIMIT_WINDOW_MS || 60_000); // 1 minute
+const rateLimitRequests: number = Number(process.env.RATE_LIMIT_REQUESTS || 100);
+
+// Analytics Configuration
+const trendingTopN: number = Number(process.env.TRENDING_TOP_N || 10);
+
 export {
 	nanoidSize,
 	port,
@@ -30,6 +43,13 @@ export {
 	redisHost,
 	redisPort,
 	redisUsername,
-	redisPassword
+	redisPassword,
+	bloomEstimatedUrls,
+	bloomBits,
+	bloomHashFunctions,
+	bloomRebuildIntervalMs,
+	rateLimitWindowMs,
+	rateLimitRequests,
+	trendingTopN
 };
 

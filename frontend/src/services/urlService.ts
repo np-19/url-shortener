@@ -1,5 +1,7 @@
+import axios from 'axios';
 import constants from '../configs/constants';
 import authService from './authService';
+import apiClient from './apiClient';
 import {
   apiErrorSchema,
   urlDataSchema,
@@ -14,27 +16,23 @@ import {
 const getReadableZodError = (error: { issues: Array<{ message: string }> }): string =>
   error.issues[0]?.message ?? 'Invalid request payload';
 
-const getApiErrorMessage = async (response: Response, fallback: string): Promise<string> => {
-  try {
-    const payload = await response.json();
-    const parsed = apiErrorSchema.safeParse(payload);
-
-    if (parsed.success) {
-      return parsed.data.message || parsed.data.error || fallback;
-    }
-  } catch {
+const getApiErrorMessage = (error: unknown, fallback: string): string => {
+  if (!axios.isAxiosError(error) || !error.response) {
     return fallback;
+  }
+
+  const parsed = apiErrorSchema.safeParse(error.response.data);
+  if (parsed.success) {
+    return parsed.data.message || parsed.data.error || fallback;
   }
 
   return fallback;
 };
 
 class UrlService {
-  private apiUrl: string;
   private backendUrl: string;
 
   constructor() {
-    this.apiUrl = constants.apiUrl;
     this.backendUrl = constants.backendUrl;
   }
 
@@ -58,36 +56,30 @@ class UrlService {
 
 
 
-    const response = await fetch(`${this.apiUrl}/create`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(body),
-    });
+    try {
+      const response = await apiClient.post('/create', body, {
+        headers,
+      });
 
-    if (!response.ok) {
-      if (response.status === 409) {
+      const payload = response.data;
+      const result = urlResponseSchema.safeParse(payload);
+      if (!result.success) {
+        throw new Error('Unexpected response format while creating short URL');
+      }
+
+      return result.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 409) {
         throw new Error('Custom alias is already in use. Please choose a different one.');
       }
-      throw new Error(await getApiErrorMessage(response, 'Failed to create short URL'));
-    }
 
-    const payload = await response.json();
-    const result = urlResponseSchema.safeParse(payload);
-    if (!result.success) {
-      throw new Error('Unexpected response format while creating short URL');
+      throw new Error(getApiErrorMessage(error, 'Failed to create short URL'));
     }
-
-    return result.data;
   }
 
   async getAllUrls(): Promise<UrlsResponse> {
-    const response = await fetch(`${this.apiUrl}/urls`);
-
-    if (!response.ok) {
-      throw new Error(await getApiErrorMessage(response, 'Failed to fetch URLs'));
-    }
-
-    const payload = await response.json();
+    const response = await apiClient.get('/urls');
+    const payload = response.data;
     const result = urlsResponseSchema.safeParse(payload);
     if (!result.success) {
       throw new Error(result.error.issues[0]?.message ?? 'Unexpected response format while fetching URLs');
@@ -103,23 +95,23 @@ class UrlService {
       throw new Error('Not authenticated');
     }
 
-    const response = await fetch(`${this.apiUrl}/my-urls`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+    try {
+      const response = await apiClient.get('/my-urls', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    if (!response.ok) {
-      throw new Error(await getApiErrorMessage(response, 'Failed to fetch URLs'));
+      const payload = response.data;
+      const result = urlsResponseSchema.safeParse(payload);
+      if (!result.success) {
+        throw new Error(result.error.issues[0]?.message ?? 'Unexpected response format while fetching your URLs');
+      }
+
+      return result.data;
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, 'Failed to fetch URLs'));
     }
-
-    const payload = await response.json();
-    const result = urlsResponseSchema.safeParse(payload);
-    if (!result.success) {
-      throw new Error(result.error.issues[0]?.message ?? 'Unexpected response format while fetching your URLs');
-    }
-
-    return result.data;
   }
 
   getShortUrl(shortId: string): string {

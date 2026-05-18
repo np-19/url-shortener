@@ -5,7 +5,7 @@ import { store } from './store';
 import { useAppDispatch, useAppSelector } from './store/hooks';
 import { initializeAuth } from './store/slices/authSlice';
 import { Header, Footer, Container } from './components';
-import { Home, DashboardPage, LoginPage, RegisterPage, MyUrlsPage } from './pages';
+import { Home, DashboardPage, LoginPage, RegisterPage, MyUrlsPage, AnalyticsPage } from './pages';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -57,6 +57,7 @@ const AppContent = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/analytics" element={<AnalyticsPage />} />
             <Route
               path="/login"
               element={

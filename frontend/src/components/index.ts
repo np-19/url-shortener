@@ -7,6 +7,7 @@ import LoadingBar from './LoadingBar';
 import Toast from './Toast';
 import UrlShortener from './Url/UrlShortener';
 import Dashboard from './Dashboard/Dashboard';
+import AnalyticsDashboard from './Analytics/AnalyticsDashboard';
 import Login from './Auth/Login';
 import Register from './Auth/Register';
 import MyUrls from './MyUrls/MyUrls';
@@ -21,6 +22,7 @@ export {
   Toast,
   UrlShortener,
   Dashboard,
+  AnalyticsDashboard,
   Login,
   Register,
   MyUrls,

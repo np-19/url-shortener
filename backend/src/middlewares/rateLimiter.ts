@@ -1,17 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
 import { getRedisClient } from '../config/redis.js';
 import { ExpressError } from '../utils/expressError.js';
+import { rateLimitWindowMs, rateLimitRequests } from '../config/constants.js';
 
 /**
  * Rate Limiter Middleware using Sliding Window Counter approach
- * Limit: 100 requests per minute per IP
+ * Limit: configurable requests per minute per IP (default 100 per minute)
  * Uses Redis to track request counts and TTL for automatic reset
  * Adds rate limit headers to responses for client awareness
  * Handles Redis errors gracefully to avoid breaking the API
  */
 
-const WINDOW_MS = 60_000;
-const LIMIT = 100;
+const WINDOW_MS = rateLimitWindowMs;
+const LIMIT = rateLimitRequests;
 const KEY_PREFIX = 'rate-limit';
 
 const getClientIdentifier = (req: Request): string => {
@@ -51,8 +52,8 @@ export const rateLimiterMiddleware = async (req: Request, res: Response, next: N
 			redisClient.get(currentKey),
 		]);
 
-		const previousCount = Number(previousCountRaw ?? 0);
-		const currentBucketCount = Number(currentCountRaw ?? 0);
+		const previousCount = Number(previousCountRaw ? previousCountRaw : 0);
+		const currentBucketCount = Number(currentCountRaw ? currentCountRaw : 0);
 		const elapsedInWindow = now - currentWindowStart;
 		const weight = (WINDOW_MS - elapsedInWindow) / WINDOW_MS;
 		const effectiveCount = Math.ceil(previousCount * weight + currentBucketCount);

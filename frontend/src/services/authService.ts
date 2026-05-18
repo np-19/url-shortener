@@ -1,4 +1,5 @@
-import constants from '../configs/constants';
+import axios from 'axios';
+import apiClient from './apiClient';
 import {
   apiErrorSchema,
   authResponseSchema,
@@ -14,28 +15,20 @@ import {
 const getReadableZodError = (error: { issues: Array<{ message: string }> }): string =>
   error.issues[0]?.message ?? 'Invalid request payload';
 
-const getApiErrorMessage = async (response: Response, fallback: string): Promise<string> => {
-  try {
-    const payload = await response.json();
-    const parsed = apiErrorSchema.safeParse(payload);
-
-    if (parsed.success) {
-      return parsed.data.message || parsed.data.error || fallback;
-    }
-  } catch {
+const getApiErrorMessage = (error: unknown, fallback: string): string => {
+  if (!axios.isAxiosError(error) || !error.response) {
     return fallback;
+  }
+
+  const parsed = apiErrorSchema.safeParse(error.response.data);
+  if (parsed.success) {
+    return parsed.data.message || parsed.data.error || fallback;
   }
 
   return fallback;
 };
 
 class AuthService {
-  private apiUrl: string;
-
-  constructor() {
-    this.apiUrl = constants.apiUrl;
-  }
-
   // Store token in localStorage
   setToken(token: string): void {
     localStorage.setItem('authToken', token);
@@ -63,19 +56,8 @@ class AuthService {
       throw new Error(getReadableZodError(validatedData.error));
     }
 
-    const response = await fetch(`${this.apiUrl}/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(validatedData.data),
-    });
-
-    if (!response.ok) {
-      throw new Error(await getApiErrorMessage(response, 'Registration failed'));
-    }
-
-    const payload = await response.json();
+    const response = await apiClient.post('/auth/register', validatedData.data);
+    const payload = response.data;
     const result = authResponseSchema.safeParse(payload);
     if (!result.success) {
       throw new Error('Unexpected response format during registration');
@@ -92,19 +74,8 @@ class AuthService {
       throw new Error(getReadableZodError(validatedData.error));
     }
 
-    const response = await fetch(`${this.apiUrl}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(validatedData.data),
-    });
-
-    if (!response.ok) {
-      throw new Error(await getApiErrorMessage(response, 'Login failed'));
-    }
-
-    const payload = await response.json();
+    const response = await apiClient.post('/auth/login', validatedData.data);
+    const payload = response.data;
     const result = authResponseSchema.safeParse(payload);
     if (!result.success) {
       throw new Error('Unexpected response format during login');
@@ -122,26 +93,27 @@ class AuthService {
       throw new Error('Not authenticated');
     }
 
-    const response = await fetch(`${this.apiUrl}/auth/me`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+    try {
+      const response = await apiClient.get('/auth/me', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    if (!response.ok) {
-      if (response.status === 401) {
+      const payload = response.data;
+      const result = userResponseSchema.safeParse(payload);
+      if (!result.success) {
+        throw new Error('Unexpected response format while fetching user data');
+      }
+
+      return result.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
         this.removeToken();
       }
-      throw new Error(await getApiErrorMessage(response, 'Failed to get user data'));
-    }
 
-    const payload = await response.json();
-    const result = userResponseSchema.safeParse(payload);
-    if (!result.success) {
-      throw new Error('Unexpected response format while fetching user data');
+      throw new Error(getApiErrorMessage(error, 'Failed to get user data'));
     }
-
-    return result.data;
   }
 
   // Logout user

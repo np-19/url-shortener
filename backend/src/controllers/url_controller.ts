@@ -3,6 +3,8 @@ import { createUrlService } from "../services/url_service.js";
 import { ExpressError } from "../utils/expressError.js";
 import { findUrlByShortIdDB, getAllUrlsDB, getUrlsByUserIdDB, incrementClicksDB } from "../dao/url_dao.js";
 import { getCachedUrl, setCachedUrl, incrementCachedClicks } from "../services/cache_service.js";
+import { addToBloom, mightExistInBloom } from "../services/bloom_service.js";
+import { getTrendingUrls, rebuildTrendingUrls, getAnalyticsSummary } from "../services/analytics_service.js";
 import type { CreateUrlRecord } from "../types/url_types.js";
 import { createUrlSchema, type CreateUrlInput } from "../validations/url_val.js";
 import { formatZodError } from "../utils/zodError.js";
@@ -32,12 +34,23 @@ export const createUrlController = async (
   const shortId = await createUrlService(urlToSave, customAlias);
   // Store in cache with TTL based on expiresAt so Redis auto-evicts
   await setCachedUrl(shortId, urlToSave.originalUrl, urlToSave.expiresAt);
+  // Add new shortId to Bloom filter in background (don't block response)
+  setImmediate(async () => {
+    try {
+      await addToBloom(shortId);
+    } catch (e) {
+      console.error(`Failed to add ${shortId} to bloom filter:`, e);
+    }
+  });
   res.status(201).send({ shortId });
   return;
 };
 
 export const redirectUrlController = async (req: Request, res: Response): Promise<void> => {
   const { shortId } = req.params;
+  // Fast negative check using Bloom filter to avoid unnecessary DB lookups
+  const mightExist = await mightExistInBloom(shortId);
+  if (!mightExist) throw new ExpressError("URL not found", 404);
   
   const cached = await getCachedUrl(shortId);
   let originalUrl: string = "";
@@ -91,5 +104,15 @@ export const getMyUrlsController = async (
   }
   const urls = await getUrlsByUserIdDB(userId);
   res.status(200).json({ urls });
+  return;
+};
+
+export const getAnalyticsController = async (
+  req: Request, res: Response
+): Promise<void> => {
+  const allUrls = await getAllUrlsDB();
+  await rebuildTrendingUrls(allUrls);
+  const analytics = getAnalyticsSummary(allUrls);
+  res.status(200).json(analytics);
   return;
 };

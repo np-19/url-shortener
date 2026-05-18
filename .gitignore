@@ -2,3 +2,5 @@ docs
 README.md
 API_DOCS.md
 .gitignore
+REDIS_SETUP_GUIDE.md
+LICENSE

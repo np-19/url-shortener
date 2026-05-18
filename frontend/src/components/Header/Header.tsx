@@ -61,6 +61,12 @@ const Header = ({}: HeaderProps) => {
             >
               Dashboard
             </Link>
+            <Link
+              to="/analytics"
+              className="text-gray-700 hover:text-gray-900 font-medium transition-colors px-3 lg:px-4 py-2 rounded-lg hover:bg-gray-100 text-sm lg:text-base"
+            >
+              Analytics
+            </Link>
 
             {isAuthenticated ? (
               <>
@@ -190,6 +196,13 @@ const Header = ({}: HeaderProps) => {
                 onClick={closeMobileMenu}
               >
                 Dashboard
+              </Link>
+              <Link
+                to="/analytics"
+                className="text-gray-700 hover:text-gray-900 font-medium transition-colors px-4 py-2 rounded-lg hover:bg-gray-100"
+                onClick={closeMobileMenu}
+              >
+                Analytics
               </Link>
 
               {isAuthenticated ? (

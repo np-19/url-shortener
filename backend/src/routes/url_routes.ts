@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { redirectUrlController, createUrlController, getAllUrlsController, getMyUrlsController } from "../controllers/url_controller.js";
+import { redirectUrlController, createUrlController, getAllUrlsController, getMyUrlsController, getAnalyticsController } from "../controllers/url_controller.js";
 import { wrapAsync } from "../utils/wrapAsync.js";
 import { optionalAuth, authenticate } from "../middlewares/auth.js";
 
@@ -16,6 +16,9 @@ router.route("/urls")
 
 router.route("/my-urls")
 .get(authenticate, wrapAsync(getMyUrlsController));
+
+router.route("/analytics")
+.get(wrapAsync(getAnalyticsController));
 
 
 
