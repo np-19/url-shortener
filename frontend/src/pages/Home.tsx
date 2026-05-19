@@ -86,7 +86,7 @@ const Home = () => {
           </div>
 
           <div className="relative space-y-4 sm:space-y-5">
-            {featureCards.map((card, index) => (
+            {featureCards.map((card) => (
               <div
                 key={card.title}
                 className="group glass-panel w-full rounded-3xl border border-white/70 bg-white/75 p-5 sm:p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_-20px_rgba(17,24,39,0.28)]"
