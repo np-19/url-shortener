@@ -32,7 +32,8 @@ export const urlDataSchema = z
     expiresAt: z.coerce
       .number()
       .int('Expiration time must be a whole number of seconds')
-      .min(VALIDATION_RULES.expiresAtSeconds.min, 'Expiration time must be positive'),
+      .min(VALIDATION_RULES.expiresAtSeconds.min, 'Expiration time must be non-negative')
+      .default(0),
     customAlias: z
       .string()
       .trim()

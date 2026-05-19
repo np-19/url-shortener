@@ -13,6 +13,6 @@ export const VALIDATION_RULES = {
     pattern: /^[a-zA-Z0-9-]+$/,
   },
   expiresAtSeconds: {
-    min: 1,
+    min: 0,
   },
 } as const;

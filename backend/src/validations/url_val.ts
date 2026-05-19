@@ -19,7 +19,8 @@ export const createUrlSchema = z
         expiresAt: z.coerce
             .number()
             .int("Expiration time must be a whole number in seconds")
-            .min(VALIDATION_RULES.expiresAtSeconds.min, "Expiration time must be a positive number"),
+            .min(VALIDATION_RULES.expiresAtSeconds.min, "Expiration time must be a non-negative number")
+            .default(0),
         customAlias: customAliasSchema.optional(),
     })
     .strict();

@@ -28,6 +28,7 @@ const rateLimitRequests: number = Number(process.env.RATE_LIMIT_REQUESTS || 100)
 
 // Analytics Configuration
 const trendingTopN: number = Number(process.env.TRENDING_TOP_N || 10);
+const neverExpiresAt: string = '9999-12-31T23:59:59.999Z';
 
 export {
 	nanoidSize,
@@ -50,6 +51,7 @@ export {
 	bloomRebuildIntervalMs,
 	rateLimitWindowMs,
 	rateLimitRequests,
-	trendingTopN
+	trendingTopN,
+	neverExpiresAt
 };
 

@@ -1,0 +1,55 @@
+@layer utilities {
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 8px 32px rgba(107, 114, 128, 0.05);
+  }
+
+  .glass-header {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 20px rgba(107, 114, 128, 0.08);
+  }
+
+  .header-shell {
+    border-radius: 16px;
+  }
+
+  @media (min-width: 768px) {
+    .header-shell {
+      border-radius: 9999px;
+    }
+  }
+
+  .glass-dropdown {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--color-silver-100);
+    box-shadow: 0 10px 40px rgba(107, 114, 128, 0.15);
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, var(--color-silver-800) 0%, var(--color-silver-500) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .shadow-soft {
+    box-shadow: 0 20px 40px -10px rgba(107, 114, 128, 0.1);
+  }
+
+  .hover-glow {
+    transition: all 0.3s ease;
+  }
+
+  .hover-glow:hover {
+    box-shadow: 0 0 20px rgba(209, 213, 219, 0.5);
+    transform: translateY(-2px);
+  }
+}

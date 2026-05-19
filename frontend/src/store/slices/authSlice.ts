@@ -32,7 +32,7 @@ export const initializeAuth = createAsyncThunk(
       }
       const response = await authService.getCurrentUser();
       return response.data;
-    } catch (error) {
+    } catch {
       authService.removeToken();
       return rejectWithValue('Failed to initialize auth');
     }

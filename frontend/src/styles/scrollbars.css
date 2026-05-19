@@ -1,0 +1,72 @@
+@layer base {
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar,
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  html::-webkit-scrollbar-track,
+  body::-webkit-scrollbar-track,
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: var(--color-beige-100);
+    border-radius: 9999px;
+  }
+
+  html::-webkit-scrollbar-thumb,
+  body::-webkit-scrollbar-thumb,
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--color-forest-400), var(--color-forest-600));
+    border-radius: 9999px;
+    border: 2px solid var(--color-beige-100);
+  }
+
+  html::-webkit-scrollbar-thumb:hover,
+  body::-webkit-scrollbar-thumb:hover,
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--color-forest-500), var(--color-forest-600));
+  }
+
+  html::-webkit-scrollbar-corner,
+  body::-webkit-scrollbar-corner,
+  .custom-scrollbar::-webkit-scrollbar-corner {
+    background: var(--color-beige-100);
+  }
+
+  .year-scroll-area {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .year-scroll-area::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+
+  html::-webkit-scrollbar-button,
+  body::-webkit-scrollbar-button,
+  .custom-scrollbar::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+
+  html::-webkit-scrollbar-button:single-button,
+  body::-webkit-scrollbar-button:single-button,
+  .custom-scrollbar::-webkit-scrollbar-button:single-button,
+  html::-webkit-scrollbar-button:vertical:decrement,
+  body::-webkit-scrollbar-button:vertical:decrement,
+  .custom-scrollbar::-webkit-scrollbar-button:vertical:decrement,
+  html::-webkit-scrollbar-button:vertical:increment,
+  body::-webkit-scrollbar-button:vertical:increment,
+  .custom-scrollbar::-webkit-scrollbar-button:vertical:increment {
+    display: none;
+    width: 0;
+    height: 0;
+    background: transparent;
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
+}

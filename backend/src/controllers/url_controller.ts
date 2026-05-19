@@ -8,6 +8,7 @@ import { getTrendingUrls, rebuildTrendingUrls, getAnalyticsSummary } from "../se
 import type { CreateUrlRecord } from "../types/url_types.js";
 import { createUrlSchema, type CreateUrlInput } from "../validations/url_val.js";
 import { formatZodError } from "../utils/zodError.js";
+import { neverExpiresAt } from "../config/constants.js";
 
 
 export const createUrlController = async (
@@ -19,8 +20,8 @@ export const createUrlController = async (
   }
 
   const { originalUrl, expiresAt, customAlias }: CreateUrlInput = urlData.data;
-  const expiresAtDate = new Date(Date.now() + expiresAt * 1000);
-  if (expiresAtDate.getTime() <= Date.now()) {
+  const expiresAtDate = expiresAt === 0 ? new Date(neverExpiresAt) : new Date(Date.now() + expiresAt * 1000);
+  if (expiresAt > 0 && expiresAtDate.getTime() <= Date.now()) {
     throw new ExpressError("Expiration time must be in the future", 400);
   }
 

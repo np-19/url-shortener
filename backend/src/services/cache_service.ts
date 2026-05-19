@@ -1,5 +1,6 @@
 import { getRedisClient } from "../config/redis.js";
 import type { CachedUrl } from "../types/url_types.js";
+import { neverExpiresAt } from "../config/constants.js";
 const DEFAULT_CACHE_TTL = 86400; // fallback 24 hours in seconds
 
 
@@ -11,6 +12,10 @@ export const setCachedUrl = async (shortId: string, originalUrl: string, expires
 			originalUrl,
 			clicks: "0",
 		};
+		if (expiresAt.toISOString() === neverExpiresAt) {
+			await redisClient.hSet(key, payload);
+			return;
+		}
 		const ttl = Math.floor((expiresAt.getTime() - Date.now()) / 1000);
 		const finalTtl = ttl > 0 ? ttl : DEFAULT_CACHE_TTL;
 		await redisClient.hSet(key, payload);
