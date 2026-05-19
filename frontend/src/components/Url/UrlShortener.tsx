@@ -92,7 +92,9 @@ const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
   };
 
   return (
-    <div className="relative z-30 bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-6 sm:p-8 lg:p-10 mx-auto overflow-visible animate-scaleIn shadow-[0_20px_60px_-15px_rgba(107,114,128,0.15)] border border-white">
+    <div className="relative z-30 bg-white/80 backdrop-blur-xl rounded-[2.5rem] px-6 pt-4 pb-6 sm:px-8 sm:pt-5 sm:pb-8 lg:px-10 lg:pt-6 lg:pb-10 mx-auto overflow-hidden animate-scaleIn shadow-[0_20px_60px_-15px_rgba(107,114,128,0.15)] border border-white">
+      <div className="absolute top-0 left-0 w-full h-1.5 bg-linear-to-r from-forest-200 via-forest-500 to-forest-200"></div>
+
       <h2 className="font-extrabold text-silver-900 mb-6 sm:mb-8 tracking-tight" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)' }}>
         Shorten Your URL
       </h2>
