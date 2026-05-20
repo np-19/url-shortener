@@ -111,7 +111,7 @@ const urlItemSchema = z
     expiresAt: z.string(),
     userId: userIdSchema,
   })
-  .passthrough();
+  .loose();
 
 export const urlsResponseSchema = z
   .object({

@@ -13,11 +13,6 @@ const HomeFeatureRail = () => (
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-forest-400">Why LinkShort</p>
           <h3 className="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight text-silver-900">Built for clarity and speed</h3>
         </div>
-        <div className="hidden sm:flex h-12 w-12 items-center justify-center rounded-2xl border border-silver-200 bg-white text-silver-500 shadow-sm">
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.086-1.086m2.828-6.828l1.086-1.086a4 4 0 115.656 5.656l-3 3a4 4 0 01-5.656 0" />
-          </svg>
-        </div>
       </div>
 
       <div className="relative space-y-4 sm:space-y-5">
