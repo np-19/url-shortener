@@ -17,9 +17,11 @@ const UrlListEmptyState = ({ description, title, showButton = false }: UrlListEm
     <h3 className="mt-4 text-xl font-bold text-silver-900">{title}</h3>
     <p className="mx-auto mt-2 max-w-sm text-base text-silver-500 mb-6">{description}</p>
     {showButton && (
-      <Link to="/">
-        <Button className="px-6 py-2">Create short link</Button>
-      </Link>
+      <div className="flex justify-center">
+        <Link to="/">
+          <Button className="px-6 py-2">Create short link</Button>
+        </Link>
+      </div>
     )}
   </div>
 );

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { loginUser, clearError } from '../../store/slices/authSlice';
+import { loginUser, setError } from '../../store/slices/authSlice';
 import Button from '../Button';
 import { loginDataSchema } from '../../schemas/apiSchemas';
 import AuthSplitPage from './AuthSplitPage';
@@ -9,20 +9,17 @@ import AuthSplitPage from './AuthSplitPage';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [localError, setLocalError] = useState('');
-  
+
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLocalError('');
-    dispatch(clearError());
 
     const validatedData = loginDataSchema.safeParse({ email, password });
     if (!validatedData.success) {
-      setLocalError(validatedData.error.issues[0]?.message ?? 'Please enter valid credentials');
+      dispatch(setError(validatedData.error.issues[0]?.message ?? 'Please enter valid credentials'));
       return;
     }
 
@@ -34,7 +31,7 @@ const Login = () => {
     }
   };
 
-  const displayError = localError || error;
+  const displayError = error;
 
   return (
     <AuthSplitPage
