@@ -9,7 +9,7 @@ const router = Router();
 
 
 router.route("/create")
-.post(optionalAuth, wrapAsync(createUrlController));
+.post(authenticate, wrapAsync(createUrlController));
 
 router.route("/urls")
 .get(wrapAsync(getAllUrlsController));
@@ -18,7 +18,7 @@ router.route("/my-urls")
 .get(authenticate, wrapAsync(getMyUrlsController));
 
 router.route("/analytics")
-.get(wrapAsync(getAnalyticsController));
+.get(authenticate, wrapAsync(getAnalyticsController));
 
 
 

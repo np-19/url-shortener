@@ -49,7 +49,6 @@ const AuthSplitPage = ({
 
       <div className="flex w-full items-center justify-center p-6 sm:p-12 lg:w-1/2">
         <div className="relative w-full max-w-md overflow-hidden rounded-[2.5rem] border border-white bg-white/80 p-8 shadow-[0_20px_60px_-15px_rgba(107,114,128,0.15)] backdrop-blur-xl sm:p-10">
-          <div className="absolute left-0 top-0 h-1.5 w-full bg-linear-to-r from-forest-200 via-forest-500 to-forest-200" />
 
           <div className="mb-8 flex justify-center lg:hidden">
             <Logo width={mobileLogoWidth} variant="text" />

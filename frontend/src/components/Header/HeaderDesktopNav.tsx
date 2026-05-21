@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Button from '../Button';
 import { useOutsideClick } from '../../hooks/useOutsideClick';
 import { headerLinks } from './headerLinks';
@@ -10,11 +10,17 @@ interface HeaderDesktopNavProps {
   onLogout: () => void;
 }
 
+const navLinkClass = (pathname: string, to: string) =>
+  pathname === to
+    ? 'rounded-full px-3 py-2 text-sm font-semibold bg-forest-500 text-white transition-all lg:px-4 lg:text-base'
+    : 'rounded-full px-3 py-2 text-sm font-medium text-silver-600 transition-colors hover:bg-beige-100 hover:text-silver-900 lg:px-4 lg:text-base';
+
 const HeaderDesktopNav = ({ isAuthenticated, user, onLogout }: HeaderDesktopNavProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useOutsideClick<HTMLDivElement>(() => {
     setIsDropdownOpen(false);
   });
+  const { pathname } = useLocation();
 
   return (
     <div className="hidden items-center gap-1 md:flex lg:gap-2">
@@ -22,7 +28,7 @@ const HeaderDesktopNav = ({ isAuthenticated, user, onLogout }: HeaderDesktopNavP
         <Link
           key={link.to}
           to={link.to}
-          className="rounded-full px-3 py-2 text-sm font-medium text-silver-600 transition-colors hover:bg-beige-100 hover:text-silver-900 lg:px-4 lg:text-base"
+          className={navLinkClass(pathname, link.to)}
         >
           {link.label}
         </Link>
@@ -31,8 +37,14 @@ const HeaderDesktopNav = ({ isAuthenticated, user, onLogout }: HeaderDesktopNavP
       {isAuthenticated ? (
         <>
           <Link
+            to="/analytics"
+            className={navLinkClass(pathname, '/analytics')}
+          >
+            Analytics
+          </Link>
+          <Link
             to="/my-urls"
-            className="rounded-full px-3 py-2 text-sm font-medium text-silver-600 transition-colors hover:bg-beige-100 hover:text-silver-900 lg:px-4 lg:text-base"
+            className={navLinkClass(pathname, '/my-urls')}
           >
             My URLs
           </Link>
@@ -51,7 +63,7 @@ const HeaderDesktopNav = ({ isAuthenticated, user, onLogout }: HeaderDesktopNavP
             {isDropdownOpen && (
               <div className="absolute right-0 top-full z-50 mt-3 w-56 origin-top-right animate-scaleIn rounded-2xl border border-forest-200/70 bg-white py-2 ring-1 ring-forest-500/10">
                 <div className="border-b border-forest-100 bg-forest-50/40 px-4 py-3">
-                  <p className="text-sm font-semibold text-forest-700">{user?.name}</p>
+                  <p className="text-sm font-semibold text-forest-800">{user?.name}</p>
                   <p className="truncate text-xs text-silver-500">{user?.email}</p>
                 </div>
                 <button
@@ -71,7 +83,7 @@ const HeaderDesktopNav = ({ isAuthenticated, user, onLogout }: HeaderDesktopNavP
         <>
           <Link
             to="/login"
-            className="mr-2 rounded-full px-3 py-2 text-sm font-medium text-silver-600 transition-colors hover:bg-beige-100 hover:text-silver-900 lg:px-4 lg:text-base"
+            className={navLinkClass(pathname, '/login')}
           >
             Login
           </Link>

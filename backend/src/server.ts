@@ -11,8 +11,6 @@ import { rateLimiterMiddleware } from "./middlewares/rateLimiter.js";
 import { wrapAsync } from "./utils/wrapAsync.js";
 import { redirectUrlController } from "./controllers/url_controller.js";
 import { rebuildBloomFromDatabase } from "./services/bloom_service.js";
-import { rebuildTrendingUrls } from "./services/analytics_service.js";
-import { getAllUrlsDB } from "./dao/url_dao.js";
 
 
 
@@ -21,10 +19,6 @@ const startServer = async (): Promise<void> => {
   await connectDB();
   await connectRedis();
   await rebuildBloomFromDatabase();
-
-  // Initialize analytics heap with all URLs
-  const allUrls = await getAllUrlsDB(undefined, 100);
-  await rebuildTrendingUrls(allUrls);
 
 
 

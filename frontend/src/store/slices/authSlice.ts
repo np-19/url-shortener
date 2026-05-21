@@ -26,14 +26,14 @@ export const initializeAuth = createAsyncThunk(
   'auth/initialize',
   async (_, { rejectWithValue }) => {
     try {
-      const token = authService.getToken();
+      const token = authService.getAccessToken();
       if (!token) {
         return null;
       }
       const response = await authService.getCurrentUser();
       return response.data;
     } catch {
-      authService.removeToken();
+      authService.removeTokens();
       return rejectWithValue('Failed to initialize auth');
     }
   }

@@ -42,24 +42,13 @@ class UrlService {
       throw new Error(getReadableZodError(validatedData.error));
     }
 
-    const token = authService.getToken();
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-
-    // Add auth token if available
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+    const token = authService.getAccessToken();
+    if (!token) {
+      throw new Error('You must be logged in to create short URLs');
     }
 
-    const body = validatedData.data;
-
-
-
     try {
-      const response = await apiClient.post('/create', body, {
-        headers,
-      });
+      const response = await apiClient.post('/create', validatedData.data);
 
       const payload = response.data;
       const result = urlResponseSchema.safeParse(payload);
@@ -90,7 +79,7 @@ class UrlService {
   }
 
   async getMyUrls(cursor?: string): Promise<UrlsResponse> {
-    const token = authService.getToken();
+    const token = authService.getAccessToken();
 
     if (!token) {
       throw new Error('Not authenticated');
@@ -98,11 +87,7 @@ class UrlService {
 
     try {
       const queryParams = cursor ? `?cursor=${cursor}` : '';
-      const response = await apiClient.get(`/my-urls${queryParams}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiClient.get(`/my-urls${queryParams}`);
 
       const payload = response.data;
       const result = urlsResponseSchema.safeParse(payload);

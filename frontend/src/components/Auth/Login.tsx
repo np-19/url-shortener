@@ -60,14 +60,14 @@ const Login = () => {
           <label htmlFor="email" className="mb-2 block text-sm font-bold text-silver-700">
             Email Address
           </label>
-          <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="john@example.com" className="w-full rounded-2xl border border-silver-200 bg-beige-50 px-5 py-4 font-medium text-silver-900 shadow-inner outline-none transition-all placeholder-silver-400 focus:border-silver-400 focus:ring-4 focus:ring-silver-200" />
+          <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="john@example.com" className="w-full rounded-2xl border border-silver-200 bg-beige-50 px-5 py-4 font-medium text-silver-900 shadow-inner outline-none transition-all placeholder-silver-400 focus:border-silver-400 focus:ring-2 focus:ring-forest-500/20" />
         </div>
 
         <div>
           <label htmlFor="password" className="mb-2 block text-sm font-bold text-silver-700">
             Password
           </label>
-          <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full rounded-2xl border border-silver-200 bg-beige-50 px-5 py-4 font-medium text-silver-900 shadow-inner outline-none transition-all placeholder-silver-400 focus:border-silver-400 focus:ring-4 focus:ring-silver-200" />
+          <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full rounded-2xl border border-silver-200 bg-beige-50 px-5 py-4 font-medium text-silver-900 shadow-inner outline-none transition-all placeholder-silver-400 focus:border-silver-400 focus:ring-2 focus:ring-forest-500/20" />
         </div>
 
         <Button type="submit" disabled={loading} className="mt-2 w-full">

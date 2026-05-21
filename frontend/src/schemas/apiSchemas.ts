@@ -58,7 +58,8 @@ export const authResponseSchema = z
     message: z.string(),
     data: z
       .object({
-        token: z.string(),
+        accessToken: z.string(),
+        refreshToken: z.string(),
         user: userSchema,
       })
       .strict(),

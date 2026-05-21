@@ -1,19 +1,35 @@
 import jwt, { Secret, SignOptions } from "jsonwebtoken";
-import { jwtExpiresIn, jwtSecret } from "../config/constants.js";
+import { jwtAccessExpiresIn, jwtRefreshExpiresIn, jwtSecret, jwtRefreshSecret } from "../config/constants.js";
 import type { JwtPayload } from "../types/jwt_types.js";
 
-export const generateToken = (userId: string, email: string): string => {
+export const generateAccessToken = (userId: string, email: string): string => {
   return jwt.sign(
     { userId, email },
     jwtSecret as Secret,
-    { expiresIn: jwtExpiresIn as SignOptions['expiresIn'] }
+    { expiresIn: jwtAccessExpiresIn as SignOptions['expiresIn'] }
   );
 };
 
-export const verifyToken = (token: string): JwtPayload => {
+export const generateRefreshToken = (userId: string): string => {
+  return jwt.sign(
+    { userId },
+    jwtRefreshSecret as Secret,
+    { expiresIn: jwtRefreshExpiresIn as SignOptions['expiresIn'] }
+  );
+};
+
+export const verifyAccessToken = (token: string): JwtPayload => {
   try {
     return jwt.verify(token, jwtSecret) as JwtPayload;
   } catch (error) {
-    throw new Error("Invalid or expired token");
+    throw new Error("Invalid or expired access token");
+  }
+};
+
+export const verifyRefreshToken = (token: string): { userId: string } => {
+  try {
+    return jwt.verify(token, jwtRefreshSecret) as { userId: string };
+  } catch (error) {
+    throw new Error("Invalid or expired refresh token");
   }
 };

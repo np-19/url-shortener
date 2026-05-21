@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import constants from '../configs/constants';
+import apiClient from '../services/apiClient';
 
 export interface TrendingUrl {
   shortId: string;
@@ -7,11 +7,24 @@ export interface TrendingUrl {
   originalUrl: string;
 }
 
+export interface TimelinePoint {
+  date: string;
+  clicks: number;
+  links: number;
+}
+
+export interface DistributionItem {
+  shortId: string;
+  clicks: number;
+}
+
 export interface AnalyticsData {
   trending: TrendingUrl[];
   totalUrls: number;
   totalClicks: number;
   averageClicks: number;
+  clicksTimeline: TimelinePoint[];
+  clicksDistribution: DistributionItem[];
   lastUpdated: number;
 }
 
@@ -24,14 +37,8 @@ export const useAnalytics = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${constants.backendUrl}/api/analytics`);
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch analytics');
-      }
-
-      const data = (await response.json()) as AnalyticsData;
-      setAnalytics(data);
+      const response = await apiClient.get('/analytics');
+      setAnalytics(response.data as AnalyticsData);
       setError('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch analytics');

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Button from '../Button';
 import { headerLinks } from './headerLinks';
 
@@ -9,7 +9,14 @@ interface HeaderMobileMenuProps {
   onClose: () => void;
 }
 
+const mobileLinkClass = (pathname: string, to: string) =>
+  pathname === to
+    ? 'font-semibold bg-forest-500 text-white transition-all px-4 py-2 rounded-xl'
+    : 'text-silver-600 hover:text-silver-900 font-medium transition-colors px-4 py-2 rounded-xl hover:bg-beige-100';
+
 const HeaderMobileMenu = ({ isAuthenticated, user, onLogout, onClose }: HeaderMobileMenuProps) => {
+  const { pathname } = useLocation();
+
   return (
     <div className="md:hidden mt-4 border-t border-silver-200 pt-4 overflow-hidden origin-top transform-gpu animate-mobileMenuIn">
       <div className="flex flex-col space-y-2">
@@ -17,7 +24,7 @@ const HeaderMobileMenu = ({ isAuthenticated, user, onLogout, onClose }: HeaderMo
           <Link
             key={link.to}
             to={link.to}
-            className="text-silver-600 hover:text-silver-900 font-medium transition-colors px-4 py-2 rounded-xl hover:bg-beige-100"
+            className={mobileLinkClass(pathname, link.to)}
             onClick={onClose}
           >
             {link.label}
@@ -27,8 +34,15 @@ const HeaderMobileMenu = ({ isAuthenticated, user, onLogout, onClose }: HeaderMo
         {isAuthenticated ? (
           <>
             <Link
+              to="/analytics"
+              className={mobileLinkClass(pathname, '/analytics')}
+              onClick={onClose}
+            >
+              Analytics
+            </Link>
+            <Link
               to="/my-urls"
-              className="text-silver-600 hover:text-silver-900 font-medium transition-colors px-4 py-2 rounded-xl hover:bg-beige-100"
+              className={mobileLinkClass(pathname, '/my-urls')}
               onClick={onClose}
             >
               My URLs
@@ -51,7 +65,7 @@ const HeaderMobileMenu = ({ isAuthenticated, user, onLogout, onClose }: HeaderMo
           <>
             <Link
               to="/login"
-              className="text-silver-600 hover:text-silver-900 font-medium transition-colors px-4 py-2 rounded-xl hover:bg-beige-100"
+              className={mobileLinkClass(pathname, '/login')}
               onClick={onClose}
             >
               Login

@@ -11,7 +11,7 @@ const CustomAliasField = ({ value, onChange }: CustomAliasFieldProps) => (
       value={value}
       onChange={(event) => onChange(event.target.value.trim())}
       placeholder="my-project, awesome-link, etc."
-      className="w-full rounded-2xl border border-silver-200 bg-beige-50 px-5 py-3 text-sm font-medium text-silver-900 shadow-inner outline-none transition-all placeholder-silver-400 focus:border-silver-400 focus:ring-4 focus:ring-silver-200 sm:text-base"
+      className="w-full rounded-2xl border-none bg-beige-50 px-5 py-3 text-sm font-medium text-silver-900 shadow-inner outline-none transition-all placeholder-silver-400 focus:bg-white focus:shadow-md focus:ring-2 focus:ring-forest-500/20 sm:text-base"
     />
     <p className="mt-2 ml-2 text-xs font-medium text-silver-500">
       Use alphanumeric characters and hyphens only (2-50 characters)

@@ -42,3 +42,16 @@ export const incrementClicksDB = async (shortId: string) : Promise<void> => {
         { $inc: { clicks: 1 } }
     );
 }
+
+export const getAnalyticsStatsDB = async (userId: string): Promise<{ totalUrls: number; totalClicks: number }> => {
+    const totalUrls = await UrlModel.countDocuments({ userId });
+    
+    const result = await UrlModel.aggregate([
+        { $match: { userId } },
+        { $group: { _id: null, totalClicks: { $sum: "$clicks" } } }
+    ]);
+    
+    const totalClicks = result.length > 0 ? result[0].totalClicks : 0;
+    
+    return { totalUrls, totalClicks };
+}

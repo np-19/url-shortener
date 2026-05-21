@@ -6,7 +6,9 @@ const port: number = Number(process.env.PORT || 3000);
 const mongoUri: string = String(process.env.MONGO_URI);
 const frontendUrl: string = String(process.env.FRONTEND_URL);
 const jwtSecret: string = String(process.env.JWT_SECRET || 'your-secret-key-change-in-production');
-const jwtExpiresIn: string = String(process.env.JWT_EXPIRES_IN || '7d');
+const jwtRefreshSecret: string = String(process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key-change-in-production');
+const jwtAccessExpiresIn: string = String(process.env.JWT_ACCESS_EXPIRES_IN || '1h');
+const jwtRefreshExpiresIn: string = String(process.env.JWT_REFRESH_EXPIRES_IN || '7d');
 const snowflakeCustomEpoch: number = Number(process.env.SNOWFLAKE_CUSTOM_EPOCH || 1735689600000);
 const snowflakeMachineIdBits: number = Number(process.env.SNOWFLAKE_MACHINE_ID_BITS || 4);
 const snowflakeSequenceBits: number = Number(process.env.SNOWFLAKE_SEQUENCE_BITS || 18);
@@ -36,7 +38,9 @@ export {
 	mongoUri,
 	frontendUrl,
 	jwtSecret,
-	jwtExpiresIn,
+	jwtRefreshSecret,
+	jwtAccessExpiresIn,
+	jwtRefreshExpiresIn,
 	snowflakeCustomEpoch,
 	snowflakeMachineIdBits,
 	snowflakeSequenceBits,

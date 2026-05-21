@@ -18,7 +18,7 @@ const CustomExpirationField = ({ calendarPanelRef, isOpen, value, onChange, onCl
       id="customExpiresDate"
       type="button"
       onClick={onToggle}
-      className="flex w-full items-center justify-between rounded-2xl border border-silver-200 bg-white px-5 py-3 text-left text-sm font-medium text-silver-900 shadow-sm transition-all hover:border-silver-300 hover:bg-beige-50 focus:border-silver-400 focus:outline-none focus:ring-4 focus:ring-silver-200 sm:text-base"
+      className="flex w-full items-center justify-between rounded-2xl border-none bg-beige-50 px-5 py-3 text-left text-sm font-medium text-silver-900 shadow-inner outline-none transition-all hover:bg-silver-100 focus:bg-white focus:shadow-md focus:ring-2 focus:ring-forest-500/20 sm:text-base"
     >
       <span>{value ? new Date(`${value}T00:00:00`).toLocaleDateString() : 'Choose a date'}</span>
       <svg className="h-5 w-5 text-silver-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

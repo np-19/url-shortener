@@ -29,76 +29,103 @@ const getApiErrorMessage = (error: unknown, fallback: string): string => {
 };
 
 class AuthService {
-  // Store token in localStorage
-  setToken(token: string): void {
-    localStorage.setItem('authToken', token);
+  setTokens(accessToken: string, refreshToken: string): void {
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
   }
 
-  // Get token from localStorage
-  getToken(): string | null {
-    return localStorage.getItem('authToken');
+  getAccessToken(): string | null {
+    return localStorage.getItem('accessToken');
   }
 
-  // Remove token from localStorage
-  removeToken(): void {
-    localStorage.removeItem('authToken');
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refreshToken');
   }
 
-  // Check if user is authenticated
+  removeTokens(): void {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+  }
+
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    return !!this.getAccessToken();
   }
 
-  // Register new user
   async register(data: RegisterData): Promise<AuthResponse> {
     const validatedData = registerDataSchema.safeParse(data);
     if (!validatedData.success) {
       throw new Error(getReadableZodError(validatedData.error));
     }
 
-    const response = await apiClient.post('/auth/register', validatedData.data);
-    const payload = response.data;
-    const result = authResponseSchema.safeParse(payload);
-    if (!result.success) {
-      throw new Error('Unexpected response format during registration');
-    }
+    try {
+      const response = await apiClient.post('/auth/register', validatedData.data);
+      const payload = response.data;
+      const result = authResponseSchema.safeParse(payload);
+      if (!result.success) {
+        throw new Error('Unexpected response format during registration');
+      }
 
-    this.setToken(result.data.data.token);
-    return result.data;
+      this.setTokens(result.data.data.accessToken, result.data.data.refreshToken);
+      return result.data;
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, 'Registration failed'));
+    }
   }
 
-  // Login user
   async login(data: LoginData): Promise<AuthResponse> {
     const validatedData = loginDataSchema.safeParse(data);
     if (!validatedData.success) {
       throw new Error(getReadableZodError(validatedData.error));
     }
 
-    const response = await apiClient.post('/auth/login', validatedData.data);
-    const payload = response.data;
-    const result = authResponseSchema.safeParse(payload);
-    if (!result.success) {
-      throw new Error('Unexpected response format during login');
-    }
+    try {
+      const response = await apiClient.post('/auth/login', validatedData.data);
+      const payload = response.data;
+      const result = authResponseSchema.safeParse(payload);
+      if (!result.success) {
+        throw new Error('Unexpected response format during login');
+      }
 
-    this.setToken(result.data.data.token);
-    return result.data;
+      this.setTokens(result.data.data.accessToken, result.data.data.refreshToken);
+      return result.data;
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, 'Login failed'));
+    }
   }
 
-  // Get current user
+  async refreshAccessToken(): Promise<string> {
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) {
+      throw new Error('No refresh token available');
+    }
+
+    try {
+      const response = await axios.post(`${apiClient.defaults.baseURL}/auth/refresh`, {
+        refreshToken,
+      });
+
+      const newAccessToken = response.data.data.accessToken;
+      if (!newAccessToken) {
+        throw new Error('Invalid response from refresh token endpoint');
+      }
+
+      this.setTokens(newAccessToken, refreshToken);
+      return newAccessToken;
+    } catch (error) {
+      this.removeTokens();
+      throw new Error('Failed to refresh token');
+    }
+  }
+
   async getCurrentUser(): Promise<UserResponse> {
-    const token = this.getToken();
+    const token = this.getAccessToken();
     
     if (!token) {
       throw new Error('Not authenticated');
     }
 
     try {
-      const response = await apiClient.get('/auth/me', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiClient.get('/auth/me');
 
       const payload = response.data;
       const result = userResponseSchema.safeParse(payload);
@@ -109,16 +136,15 @@ class AuthService {
       return result.data;
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
-        this.removeToken();
+        this.removeTokens();
       }
 
       throw new Error(getApiErrorMessage(error, 'Failed to get user data'));
     }
   }
 
-  // Logout user
   logout(): void {
-    this.removeToken();
+    this.removeTokens();
   }
 }
 

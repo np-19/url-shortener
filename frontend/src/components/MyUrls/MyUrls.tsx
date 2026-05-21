@@ -12,6 +12,7 @@ const MyUrls = () => {
       fetchUrls={fetchUrls}
       emptyTitle="No URLs yet"
       emptyDescription="Get started by creating your first shortened URL on the home page."
+      showEmptyButton={true}
     />
   );
 };

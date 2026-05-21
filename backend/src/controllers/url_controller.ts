@@ -4,7 +4,7 @@ import { ExpressError } from "../utils/expressError.js";
 import { findUrlByShortIdDB, getAllUrlsDB, getUrlsByUserIdDB, incrementClicksDB } from "../dao/url_dao.js";
 import { getCachedUrl, setCachedUrl, incrementCachedClicks } from "../services/cache_service.js";
 import { addToBloom, mightExistInBloom } from "../services/bloom_service.js";
-import { getTrendingUrls, rebuildTrendingUrls, getAnalyticsSummary } from "../services/analytics_service.js";
+import { getAnalyticsSummary } from "../services/analytics_service.js";
 import type { CreateUrlRecord } from "../types/url_types.js";
 import { createUrlSchema, type CreateUrlInput } from "../validations/url_val.js";
 import { formatZodError } from "../utils/zodError.js";
@@ -124,10 +124,14 @@ export const getMyUrlsController = async (
 export const getAnalyticsController = async (
   req: Request, res: Response
 ): Promise<void> => {
-  // Fetch up to 100 URLs for analytics computations
-  const allUrls = await getAllUrlsDB(undefined, 100);
-  await rebuildTrendingUrls(allUrls);
-  const analytics = getAnalyticsSummary(allUrls);
+  const userId = req.user?.userId;
+  if (!userId) {
+    throw new ExpressError("Unauthorized", 401);
+  }
+
+  // Fetch up to 100 URLs for analytics computations for this user
+  const userUrls = await getUrlsByUserIdDB(userId, undefined, 100);
+  const analytics = await getAnalyticsSummary(userId, userUrls);
   res.status(200).json(analytics);
   return;
 };

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyToken } from "../utils/jwt.js";
+import { verifyAccessToken } from "../utils/jwt.js";
 import { ExpressError } from "../utils/expressError.js";
 
 export const authenticate = (
@@ -17,7 +17,7 @@ export const authenticate = (
     const token = authHeader.split(" ")[1];
 
     try {
-      const decoded = verifyToken(token);
+      const decoded = verifyAccessToken(token);
       req.user = decoded;
       next();
     } catch (error) {
@@ -37,7 +37,7 @@ export const optionalAuth = (
   if (authHeader && authHeader.startsWith("Bearer ")) {
     const token = authHeader.split(" ")[1];
     try {
-      const decoded = verifyToken(token);
+      const decoded = verifyAccessToken(token);
       req.user = decoded;
     } catch (error) {
       // If token is invalid, we simply ignore it and proceed without authentication
@@ -52,4 +52,3 @@ export const authorize = (req: Request, res: Response, next: NextFunction): void
   }
   next();
 };
-

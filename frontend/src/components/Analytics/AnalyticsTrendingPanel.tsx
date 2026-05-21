@@ -8,18 +8,18 @@ interface AnalyticsTrendingPanelProps {
 }
 
 const AnalyticsTrendingPanel = ({ trending, onCopy }: AnalyticsTrendingPanelProps) => (
-  <div className="flex flex-col rounded-[2.5rem] border border-white bg-white/80 p-6 shadow-soft backdrop-blur-xl sm:p-8">
-    <div className="mb-6 flex items-center gap-3">
-      <div className="rounded-xl border border-orange-100/50 bg-linear-to-br from-orange-50 to-orange-100 p-2.5 shadow-sm">
-        <span className="block text-lg leading-none text-orange-500">Hot</span>
-      </div>
-      <h3 className="text-2xl font-extrabold text-silver-900">Top Trending</h3>
+  <div className="rounded-2xl border border-silver-100 bg-white p-5">
+    <div className="mb-3 flex items-center gap-2">
+      <svg className="h-4 w-4 text-forest-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+      </svg>
+      <h3 className="text-sm font-bold uppercase tracking-widest text-silver-500">Top Performing</h3>
     </div>
 
     {trending.length === 0 ? (
       <AnalyticsEmptyTrends />
     ) : (
-      <div className="space-y-4 overflow-y-auto pr-2 custom-scrollbar">
+      <div className="space-y-0.5">
         {trending.map((url, index) => (
           <AnalyticsTrendingItem key={url.shortId} url={url} index={index} onCopy={onCopy} />
         ))}

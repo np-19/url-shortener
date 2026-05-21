@@ -14,9 +14,10 @@ interface UrlListPageProps {
   fetchUrls: (cursor?: string) => Promise<UrlsResponse>;
   emptyTitle: string;
   emptyDescription: string;
+  showEmptyButton?: boolean;
 }
 
-const UrlListPage = ({ title, loadMessage, fetchUrls, emptyTitle, emptyDescription }: UrlListPageProps) => {
+const UrlListPage = ({ title, loadMessage, fetchUrls, emptyTitle, emptyDescription, showEmptyButton = false }: UrlListPageProps) => {
   const { urls, loading, loadingMore, error, hasMore, refresh, loadMore } = usePaginatedUrls(fetchUrls);
   const { toast, setToast, copyText } = useCopyToast();
 
@@ -32,7 +33,7 @@ const UrlListPage = ({ title, loadMessage, fetchUrls, emptyTitle, emptyDescripti
     <div className="animate-fadeIn bg-transparent">
       <UrlListHeader title={title} onRefresh={refresh} />
       {urls.length === 0 ? (
-        <UrlListEmptyState title={emptyTitle} description={emptyDescription} />
+        <UrlListEmptyState title={emptyTitle} description={emptyDescription} showButton={showEmptyButton} />
       ) : (
         <UrlListGrid urls={urls} onCopy={copyText} />
       )}

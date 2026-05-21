@@ -6,7 +6,6 @@ import Button from './Button';
 import LoadingBar from './LoadingBar';
 import Toast from './Toast';
 import UrlShortener from './Url/UrlShortener';
-import Dashboard from './Dashboard/Dashboard';
 import AnalyticsDashboard from './Analytics/AnalyticsDashboard';
 import Login from './Auth/Login';
 import Register from './Auth/Register';
@@ -21,7 +20,6 @@ export {
   LoadingBar,
   Toast,
   UrlShortener,
-  Dashboard,
   AnalyticsDashboard,
   Login,
   Register,

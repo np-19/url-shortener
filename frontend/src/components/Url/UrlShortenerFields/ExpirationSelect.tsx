@@ -30,7 +30,7 @@ const ExpirationSelect = ({ value, onChange, onNonCustomSelected }: ExpirationSe
         <button
           type="button"
           onClick={() => setIsExpiresOpen((open) => !open)}
-          className="flex w-full items-center justify-between rounded-2xl border border-silver-200 bg-beige-50 px-5 py-3 text-left text-sm font-medium text-silver-900 shadow-inner outline-none transition-all hover:border-silver-300 focus:border-silver-400 focus:ring-4 focus:ring-silver-200 sm:text-base"
+          className="flex w-full items-center justify-between rounded-2xl border-none bg-beige-50 px-5 py-3 text-left text-sm font-medium text-silver-900 shadow-inner outline-none transition-all hover:bg-silver-100 focus:bg-white focus:shadow-md focus:ring-2 focus:ring-forest-500/20 sm:text-base"
         >
           <span>{selectedExpiryLabel}</span>
           <svg className={`h-5 w-5 text-silver-400 transition-transform ${isExpiresOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -39,7 +39,7 @@ const ExpirationSelect = ({ value, onChange, onNonCustomSelected }: ExpirationSe
         </button>
 
         {isExpiresOpen && (
-          <div className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-40 overflow-hidden rounded-2xl border border-silver-200 bg-white shadow-[0_20px_50px_-20px_rgba(15,23,42,0.35)]">
+          <div className="absolute left-0 right-0 bottom-[calc(100%+0.5rem)] z-40 overflow-hidden rounded-2xl border border-silver-200 bg-white shadow-[0_-20px_50px_-20px_rgba(15,23,42,0.35)]">
             <div className="relative">
               <div
                 ref={listRef}

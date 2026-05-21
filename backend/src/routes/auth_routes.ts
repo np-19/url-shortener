@@ -3,6 +3,7 @@ import {
   registerController,
   loginController,
   getMeController,
+  refreshTokenController,
 } from "../controllers/auth_controller.js";
 import { wrapAsync } from "../utils/wrapAsync.js";
 import { authenticate } from "../middlewares/auth.js";
@@ -14,5 +15,7 @@ router.route("/register").post(wrapAsync(registerController));
 router.route("/login").post(wrapAsync(loginController));
 
 router.route("/me").get(authenticate, wrapAsync(getMeController));
+
+router.route("/refresh").post(wrapAsync(refreshTokenController));
 
 export default router;

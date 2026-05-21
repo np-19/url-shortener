@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { registerUser, loginUser } from "../services/auth_service.js";
+import { registerUser, loginUser, refreshUserToken } from "../services/auth_service.js";
 import { ExpressError } from "../utils/expressError.js";
 import { findUserByIdDB } from "../dao/user_dao.js";
 import { createUserSchema, loginUserSchema } from "../validations/user_val.js";
@@ -77,4 +77,26 @@ export const getMeController = async (
       createdAt: user.createdAt,
     },
   });
+};
+
+export const refreshTokenController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    throw new ExpressError("Refresh token is required", 400);
+  }
+
+  try {
+    const { accessToken } = await refreshUserToken(refreshToken);
+    res.status(200).json({
+      success: true,
+      message: "Token refreshed successfully",
+      data: { accessToken },
+    });
+  } catch (error: any) {
+    throw new ExpressError(error.message, 401);
+  }
 };
