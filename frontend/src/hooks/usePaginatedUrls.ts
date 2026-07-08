@@ -1,60 +1,40 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import type { UrlItem, UrlsResponse } from '../services';
 
 type FetchUrls = (cursor?: string) => Promise<UrlsResponse>;
 
-export const usePaginatedUrls = (fetchUrls: FetchUrls) => {
-  const [urls, setUrls] = useState<UrlItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [error, setError] = useState('');
-  const [nextCursor, setNextCursor] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(false);
+export const usePaginatedUrls = (queryKey: string, fetchUrls: FetchUrls) => {
+  const query = useInfiniteQuery<UrlsResponse, Error>({
+    queryKey: [queryKey],
+    queryFn: ({ pageParam }) => fetchUrls(pageParam as string | undefined),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => (lastPage.hasMore ? (lastPage.nextCursor ?? undefined) : undefined),
+    staleTime: 60_000,
+    gcTime: 10 * 60_000,
+    refetchOnWindowFocus: false,
+  });
 
-  const applyResponse = useCallback((data: UrlsResponse, reset: boolean) => {
-    setUrls((current) => (reset ? data.urls : [...current, ...data.urls]));
-    setNextCursor(data.nextCursor ?? null);
-    setHasMore(data.hasMore ?? false);
-    setError('');
-  }, []);
+  const pages: UrlsResponse[] = query.data?.pages ?? [];
+  const urls: UrlItem[] = pages.flatMap((page) => page.urls);
+  const nextCursor = pages.length > 0 ? (pages[pages.length - 1].nextCursor ?? null) : null;
+  const hasMore = query.hasNextPage;
 
-  const refresh = useCallback(async () => {
-    setLoading(true);
+  const refresh = async () => {
+    await query.refetch();
+  };
 
-    try {
-      const data = await fetchUrls();
-      applyResponse(data, true);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch URLs');
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
+  const loadMore = async () => {
+    if (!query.hasNextPage || query.isFetchingNextPage) {
+      return;
     }
-  }, [applyResponse, fetchUrls]);
-
-  const loadMore = useCallback(async () => {
-    setLoadingMore(true);
-
-    try {
-      const data = await fetchUrls(nextCursor ?? undefined);
-      applyResponse(data, false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch URLs');
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-    }
-  }, [applyResponse, fetchUrls, nextCursor]);
-
-  useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    await query.fetchNextPage();
+  };
 
   return {
     urls,
-    loading,
-    loadingMore,
-    error,
+    loading: query.isLoading,
+    loadingMore: query.isFetchingNextPage,
+    error: query.error instanceof Error ? query.error.message : '',
     hasMore,
     nextCursor,
     refresh,

@@ -7,6 +7,7 @@ const MyUrls = () => {
 
   return (
     <UrlListPage
+      queryKey="my-urls"
       title="My URLs"
       loadMessage="Loading your URLs..."
       fetchUrls={fetchUrls}

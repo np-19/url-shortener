@@ -9,6 +9,7 @@ import UrlListGrid from './UrlListGrid';
 import UrlListHeader from './UrlListHeader';
 
 interface UrlListPageProps {
+  queryKey: string;
   title: string;
   loadMessage: string;
   fetchUrls: (cursor?: string) => Promise<UrlsResponse>;
@@ -17,8 +18,8 @@ interface UrlListPageProps {
   showEmptyButton?: boolean;
 }
 
-const UrlListPage = ({ title, loadMessage, fetchUrls, emptyTitle, emptyDescription, showEmptyButton = false }: UrlListPageProps) => {
-  const { urls, loading, loadingMore, error, hasMore, refresh, loadMore } = usePaginatedUrls(fetchUrls);
+const UrlListPage = ({ queryKey, title, loadMessage, fetchUrls, emptyTitle, emptyDescription, showEmptyButton = false }: UrlListPageProps) => {
+  const { urls, loading, loadingMore, error, hasMore, refresh, loadMore } = usePaginatedUrls(queryKey, fetchUrls);
   const { toast, setToast, copyText } = useCopyToast();
 
   if (loading) {

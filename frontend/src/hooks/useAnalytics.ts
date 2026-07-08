@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import apiClient from '../services/apiClient';
 
 export interface TrendingUrl {
@@ -29,38 +29,24 @@ export interface AnalyticsData {
 }
 
 export const useAnalytics = () => {
-  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  const fetchAnalytics = async () => {
-    setLoading(true);
-
-    try {
-      const response = await apiClient.get('/analytics');
-      setAnalytics(response.data as AnalyticsData);
-      setError('');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch analytics');
-    } finally {
-      setLoading(false);
-    }
+  const fetchAnalytics = async (): Promise<AnalyticsData> => {
+    const response = await apiClient.get('/analytics');
+    return response.data as AnalyticsData;
   };
 
-  useEffect(() => {
-    void fetchAnalytics();
-
-    const interval = window.setInterval(() => {
-      void fetchAnalytics();
-    }, 30000);
-
-    return () => window.clearInterval(interval);
-  }, []);
+  const query = useQuery<AnalyticsData, Error>({
+    queryKey: ['analytics'],
+    queryFn: fetchAnalytics,
+    staleTime: 30_000,
+    gcTime: 5 * 60_000,
+    refetchInterval: 30_000,
+    refetchOnWindowFocus: false,
+  });
 
   return {
-    analytics,
-    loading,
-    error,
-    refresh: fetchAnalytics,
+    analytics: query.data ?? null,
+    loading: query.isLoading,
+    error: query.error instanceof Error ? query.error.message : '',
+    refresh: query.refetch,
   };
 };
