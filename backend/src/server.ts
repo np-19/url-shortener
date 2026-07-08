@@ -1,7 +1,6 @@
-
-import express from 'express';
-import cors from 'cors';
-import {port, frontendUrl} from "./config/constants.js";
+import express from "express";
+import cors from "cors";
+import { port, frontendUrl } from "./config/constants.js";
 import { connectDB } from "./config/mongo.js";
 import { connectRedis } from "./config/redis.js";
 import urlRoutes from "./routes/url_routes.js";
@@ -12,47 +11,69 @@ import { wrapAsync } from "./utils/wrapAsync.js";
 import { redirectUrlController } from "./controllers/url_controller.js";
 import { rebuildBloomFromDatabase } from "./services/bloom_service.js";
 
-
-
 const app = express();
-const startServer = async (): Promise<void> => {
-  await connectDB();
-  await connectRedis();
-  await rebuildBloomFromDatabase();
 
+// ==================== Middlewares ====================
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
-
-  // CORS configuration
-  app.use(cors({
+app.use(
+  cors({
     origin: frontendUrl,
-    exposedHeaders: ['X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset', 'Retry-After'],
+    exposedHeaders: [
+      "X-RateLimit-Limit",
+      "X-RateLimit-Remaining",
+      "X-RateLimit-Reset",
+      "Retry-After",
+    ],
     optionsSuccessStatus: 200,
-  }));
+  })
+);
 
-  // Rate limiting middleware (applied to all routes)
-  app.use(wrapAsync(rateLimiterMiddleware));
+app.use(wrapAsync(rateLimiterMiddleware));
 
-  app.use('/api/auth', authRoutes);
-  app.use('/api', urlRoutes);
+// ==================== Routes ====================
 
-  // Redirect route for short URLs (must be last)
-  app.get('/:shortId', wrapAsync(redirectUrlController));
+app.use("/api/auth", authRoutes);
+app.use("/api", urlRoutes);
 
-  app.use((req, res) => {
-    res.status(404).json({ message: 'Route not found' });
-  });
+app.get("/:shortId", wrapAsync(redirectUrlController));
 
-  app.use(errorHandler);
+app.use((req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
 
-  app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-  });
+app.use(errorHandler);
+
+// ==================== Startup ====================
+
+const startServer = async () => {
+  try {
+    // Critical dependency
+    await connectDB();
+    console.log("MongoDB connected");
+
+    // Optional dependency
+    try {
+      await connectRedis();
+      console.log("Redis connected");
+
+      await rebuildBloomFromDatabase();
+      console.log("Bloom filter rebuilt");
+    } catch (err) {
+      console.warn("Redis unavailable. Starting without Redis.");
+      console.error(err);
+    }
+
+    app.listen(port, () => {
+      console.log(`Server running on http://localhost:${port}`);
+    });
+  } catch (err) {
+    console.error("Failed to start server");
+    console.error(err);
+    process.exit(1);
+  }
 };
 
-startServer().catch((error) => {
-  console.error('Failed to start server:', error);
-  process.exit(1);
-});
+startServer();
