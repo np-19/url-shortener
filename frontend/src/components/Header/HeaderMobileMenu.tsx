@@ -1,6 +1,4 @@
 import { Link, useLocation } from 'react-router-dom';
-import { headerLinks } from './headerLinks';
-import HeaderAuthActions from './HeaderAuthActions';
 
 interface HeaderMobileMenuProps {
   isAuthenticated: boolean;
@@ -20,16 +18,13 @@ const HeaderMobileMenu = ({ isAuthenticated, user, onLogout, onClose }: HeaderMo
   return (
     <div className="md:hidden mt-4 border-t border-silver-200 pt-4 overflow-hidden origin-top transform-gpu animate-mobileMenuIn">
       <div className="flex flex-col space-y-2">
-        {headerLinks.map((link) => (
-          <Link
-            key={link.to}
-            to={link.to}
-            className={mobileLinkClass(pathname, link.to)}
-            onClick={onClose}
-          >
-            {link.label}
-          </Link>
-        ))}
+        <Link
+          to="/"
+          className={mobileLinkClass(pathname, '/')}
+          onClick={onClose}
+        >
+          Home
+        </Link>
 
         {isAuthenticated ? (
           <>
@@ -62,11 +57,22 @@ const HeaderMobileMenu = ({ isAuthenticated, user, onLogout, onClose }: HeaderMo
             </button>
           </>
         ) : (
-          <HeaderAuthActions
-            layoutClassName="mt-2 flex flex-col gap-2"
-            buttonClassName="w-full text-center"
-            onNavigate={onClose}
-          />
+          <>
+            <Link
+              to="/login"
+              className={mobileLinkClass(pathname, '/login')}
+              onClick={onClose}
+            >
+              Login
+            </Link>
+            <Link
+              to="/register"
+              className={mobileLinkClass(pathname, '/register')}
+              onClick={onClose}
+            >
+              Sign Up
+            </Link>
+          </>
         )}
       </div>
     </div>

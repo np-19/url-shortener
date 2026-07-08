@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useOutsideClick } from '../../hooks/useOutsideClick';
-import { headerLinks } from './headerLinks';
-import HeaderAuthActions from './HeaderAuthActions';
 
 interface HeaderDesktopNavProps {
   isAuthenticated: boolean;
@@ -24,15 +22,12 @@ const HeaderDesktopNav = ({ isAuthenticated, user, onLogout }: HeaderDesktopNavP
 
   return (
     <div className="hidden items-center gap-1 md:flex lg:gap-2">
-      {headerLinks.map((link) => (
-        <Link
-          key={link.to}
-          to={link.to}
-          className={navLinkClass(pathname, link.to)}
-        >
-          {link.label}
-        </Link>
-      ))}
+      <Link
+        to="/"
+        className={navLinkClass(pathname, '/')}
+      >
+        Home
+      </Link>
 
       {isAuthenticated ? (
         <>
@@ -80,7 +75,20 @@ const HeaderDesktopNav = ({ isAuthenticated, user, onLogout }: HeaderDesktopNavP
           </div>
         </>
       ) : (
-        <HeaderAuthActions />
+        <>
+          <Link
+            to="/login"
+            className={navLinkClass(pathname, '/login')}
+          >
+            Login
+          </Link>
+          <Link
+            to="/register"
+            className={navLinkClass(pathname, '/register')}
+          >
+            Sign Up
+          </Link>
+        </>
       )}
     </div>
   );
