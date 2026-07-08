@@ -21,6 +21,20 @@ const Register = () => {
   const { loading, error } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
 
+  const getEmailInputClassName = () => {
+    const base = "w-full rounded-2xl border px-5 py-4 font-medium outline-none transition-all placeholder-silver-400";
+    if (emailChecking) {
+      return `${base} border-silver-200 bg-beige-50 text-silver-900 shadow-inner focus:border-silver-400 focus:ring-2 focus:ring-forest-500/20`;
+    }
+    if (emailAvailabilityError) {
+      return `${base} border-apple-500 bg-apple-50/20 text-apple-700 focus:ring-2 focus:ring-apple-500/20`;
+    }
+    if (emailAvailable && email.trim().length > 0) {
+      return `${base} border-green-500 bg-green-50/20 text-green-700 focus:ring-2 focus:ring-green-500/20`;
+    }
+    return `${base} border-silver-200 bg-beige-50 text-silver-900 shadow-inner focus:border-silver-400 focus:ring-2 focus:ring-forest-500/20`;
+  };
+
   const isEmailFormatValid = (candidate: string): boolean => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(candidate);
   };
@@ -146,7 +160,7 @@ const Register = () => {
               void runEmailAvailabilityCheck(email);
             }}
             placeholder="john@example.com"
-            className="w-full rounded-2xl border border-silver-200 bg-beige-50 px-5 py-4 font-medium text-silver-900 shadow-inner outline-none transition-all placeholder-silver-400 focus:border-silver-400 focus:ring-2 focus:ring-forest-500/20"
+            className={getEmailInputClassName()}
           />
           {emailChecking && <p className="mt-2 ml-2 text-xs font-medium text-silver-500">Checking email availability...</p>}
           {emailAvailabilityError && <p className="mt-2 ml-2 text-xs font-medium text-apple-600">{emailAvailabilityError}</p>}
