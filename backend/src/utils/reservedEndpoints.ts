@@ -16,6 +16,9 @@ export const RESERVED_ENDPOINTS = [
   'contact',
   'settings',
   'admin',
+  'analytics',
+  'my-urls',
+  'not-found',
 
   // Common web paths
   'static',

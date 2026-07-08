@@ -10,6 +10,7 @@ import type { CreateUrlRecord } from "../types/url_types.js";
 import { createUrlSchema, type CreateUrlInput } from "../validations/url_val.js";
 import { formatZodError } from "../utils/zodError.js";
 import { neverExpiresAt, frontendUrl } from "../config/constants.js";
+import { isReservedEndpoint } from "../utils/reservedEndpoints.js";
 
 
 export const createUrlController = async (
@@ -151,6 +152,14 @@ export const checkAliasAvailabilityController = async (
 
   if (!alias) {
     throw new ExpressError('Alias is required', 400);
+  }
+
+  if (isReservedEndpoint(alias)) {
+    res.status(200).json({
+      available: false,
+      message: 'This alias is reserved and cannot be used',
+    });
+    return;
   }
 
   const isInUse = await isAliasInUseDB(alias);
