@@ -24,6 +24,10 @@
     },
     {
       "source": "/(analytics|login|register|my-urls|not-found)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/index.html",
       "destination": { "service": "frontend" }
     },
     {
