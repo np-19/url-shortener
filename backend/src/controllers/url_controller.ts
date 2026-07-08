@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { createUrlService } from "../services/url_service.js";
 import { ExpressError } from "../utils/expressError.js";
-import { findUrlByShortIdDB, getAllUrlsDB, getUrlsByUserIdDB, incrementClicksDB } from "../dao/url_dao.js";
+import { findUrlByShortIdDB, getAllUrlsDB, getUrlsByUserIdDB, getUrlsByUserIdForAnalyticsDB, incrementClicksDB } from "../dao/url_dao.js";
 import { getCachedUrl, setCachedUrl, incrementCachedClicks } from "../services/cache_service.js";
 import { addToBloom, mightExistInBloom } from "../services/bloom_service.js";
 import { getAnalyticsSummary } from "../services/analytics_service.js";
@@ -129,8 +129,8 @@ export const getAnalyticsController = async (
     throw new ExpressError("Unauthorized", 401);
   }
 
-  // Fetch up to 100 URLs for analytics computations for this user
-  const userUrls = await getUrlsByUserIdDB(userId, undefined, 100);
+  // Fetch only analytics fields for up to 100 URLs to keep the response fast
+  const userUrls = await getUrlsByUserIdForAnalyticsDB(userId, 100);
   const analytics = await getAnalyticsSummary(userId, userUrls);
   res.status(200).json(analytics);
   return;

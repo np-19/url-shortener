@@ -37,5 +37,6 @@ const urlSchema: Schema = new Schema<IUrl>(
 urlSchema.index({ "expiresAt": 1 }, { expireAfterSeconds: 0 }); //Auto-delete expired documents
 urlSchema.index({ createdAt: -1 });
 urlSchema.index({ clicks: -1 });
+urlSchema.index({ userId: 1, _id: -1 });
 
 export const UrlModel = mongoose.model<IUrl>("Url", urlSchema);

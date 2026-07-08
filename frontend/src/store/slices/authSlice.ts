@@ -26,11 +26,14 @@ export const initializeAuth = createAsyncThunk(
   'auth/initialize',
   async (_, { rejectWithValue }) => {
     try {
-      const token = authService.getAccessToken();
-      if (!token) {
+      const accessToken = authService.getAccessToken();
+      const refreshToken = authService.getRefreshToken();
+
+      if (!accessToken && !refreshToken) {
         return null;
       }
-      const response = await authService.getCurrentUser();
+
+      const response = await authService.initializeSession();
       return response.data;
     } catch {
       authService.removeTokens();

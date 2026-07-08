@@ -113,7 +113,35 @@ class AuthService {
       return newAccessToken;
     } catch (error) {
       this.removeTokens();
-      throw new Error('Failed to refresh token');
+      if (error instanceof Error) {
+        throw new Error('Failed to refresh token');
+      }
+      throw new Error('An unknown error occurred while refreshing the token');
+    }
+  }
+
+  async initializeSession(): Promise<UserResponse> {
+    const accessToken = this.getAccessToken();
+    const refreshToken = this.getRefreshToken();
+
+    if (!accessToken && !refreshToken) {
+      throw new Error('No session available');
+    }
+
+    try {
+      if (!accessToken && refreshToken) {
+        await this.refreshAccessToken();
+      }
+
+      return await this.getCurrentUser();
+    } catch {
+      if (!refreshToken) {
+        throw new Error('Failed to initialize session');
+      }
+
+      // One retry path: refresh token then fetch user again.
+      await this.refreshAccessToken();
+      return this.getCurrentUser();
     }
   }
 
@@ -135,10 +163,6 @@ class AuthService {
 
       return result.data;
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 401) {
-        this.removeTokens();
-      }
-
       throw new Error(getApiErrorMessage(error, 'Failed to get user data'));
     }
   }

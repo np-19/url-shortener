@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { store } from './store';
 import { useAppDispatch, useAppSelector } from './store/hooks';
 import { initializeAuth } from './store/slices/authSlice';
@@ -43,8 +43,14 @@ const GuestRoute = ({ children }: { children: React.ReactElement }) => {
 
 const AppContent = () => {
   const dispatch = useAppDispatch();
+  const initializedRef = useRef(false);
 
   useEffect(() => {
+    if (initializedRef.current) {
+      return;
+    }
+
+    initializedRef.current = true;
     dispatch(initializeAuth());
   }, [dispatch]);
 
