@@ -1,37 +1,38 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
+  "services": {
+    "frontend": {
+      "root": "frontend",
+      "framework": "vite"
     },
-    {
-      "src": "backend/src/server.ts",
-      "use": "@vercel/node"
+    "backend": {
+      "root": "backend",
+      "framework": "express"
     }
-  ],
-  "routes": [
+  },
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "backend/src/server.ts"
+      "source": "/api/(.*)",
+      "destination": { "service": "backend" }
     },
     {
-      "handle": "filesystem"
+      "source": "/assets/(.*)",
+      "destination": { "service": "frontend" }
     },
     {
-      "src": "/(analytics|login|register|my-urls|not-found)",
-      "dest": "frontend/index.html"
+      "source": "/logo.svg",
+      "destination": { "service": "frontend" }
     },
     {
-      "src": "/",
-      "dest": "frontend/index.html"
+      "source": "/(analytics|login|register|my-urls|not-found)",
+      "destination": { "service": "frontend" }
     },
     {
-      "src": "/(.*)",
-      "dest": "backend/src/server.ts"
+      "source": "/",
+      "destination": { "service": "frontend" }
+    },
+    {
+      "source": "/(.*)",
+      "destination": { "service": "backend" }
     }
   ]
 }
