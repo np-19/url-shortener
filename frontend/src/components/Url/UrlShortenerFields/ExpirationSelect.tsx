@@ -30,7 +30,7 @@ const ExpirationSelect = ({ value, onChange, onNonCustomSelected }: ExpirationSe
         <button
           type="button"
           onClick={() => setIsExpiresOpen((open) => !open)}
-          className="flex w-full items-center justify-between rounded-2xl border-none bg-beige-50 px-5 py-3 text-left text-sm font-medium text-silver-900 shadow-inner outline-none transition-all hover:bg-silver-100 focus:bg-white focus:shadow-md focus:ring-2 focus:ring-forest-500/20 sm:text-base"
+          className="flex w-full items-center justify-between rounded-xl border border-silver-200 bg-white px-4 py-2.5 text-left text-sm font-semibold text-silver-800 shadow-2xs outline-none transition-all hover:bg-silver-50 focus:border-forest-400 focus:ring-1 focus:ring-forest-500/10 sm:text-base"
         >
           <span>{selectedExpiryLabel}</span>
           <svg className={`h-5 w-5 text-silver-400 transition-transform ${isExpiresOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">

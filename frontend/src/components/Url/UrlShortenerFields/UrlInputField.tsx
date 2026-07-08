@@ -12,7 +12,7 @@ const UrlInputField = ({ value, onChange }: UrlInputFieldProps) => (
       value={value}
       onChange={(event) => onChange(event.target.value)}
       placeholder="Paste your long URL here..."
-      className="w-full rounded-2xl border-none bg-beige-50 px-5 py-4 text-sm font-medium text-silver-900 shadow-inner outline-none transition-all placeholder-silver-400 focus:bg-white focus:shadow-md focus:ring-2 focus:ring-forest-500/20 sm:text-base"
+      className="w-full rounded-xl border border-silver-200 bg-white px-4 py-3 text-sm font-semibold text-silver-800 transition-all placeholder-silver-400 shadow-2xs focus:border-forest-400 focus:ring-1 focus:ring-forest-500/10 focus:outline-none sm:text-base"
     />
   </div>
 );

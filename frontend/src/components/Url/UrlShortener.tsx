@@ -31,15 +31,10 @@ const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
   } = useUrlShortenerForm(onUrlCreated);
 
   return (
-    <div className="relative z-30 mx-auto overflow-visible rounded-[2.5rem] border border-white bg-white/80 px-6 pb-6 pt-4 shadow-[0_20px_60px_-15px_rgba(107,114,128,0.15)] backdrop-blur-xl animate-scaleIn sm:px-8 sm:pb-8 sm:pt-5 lg:px-10 lg:pb-10 lg:pt-6">
-      <div className="overflow-hidden rounded-t-[2.5rem] -mx-6 -mt-4 sm:-mx-8 sm:-mt-5 lg:-mx-10 lg:-mt-6">
-        <div className="px-6 pb-1 pt-3 sm:px-8 sm:pt-4 lg:px-10 lg:pt-4">
-          <h2 className="font-extrabold tracking-tight text-silver-900" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)' }}>
-            Shorten Your URL
-          </h2>
-        </div>
-      </div>
-
+    <div className="relative z-30 mx-auto overflow-visible rounded-2xl border border-silver-200 bg-white/80 p-5 shadow-xs backdrop-blur-md animate-scaleIn sm:p-7">
+      <h2 className="text-xl font-bold tracking-tight text-silver-900 mb-5 sm:text-2xl">
+        Shorten Your URL
+      </h2>
       <UrlShortenerFields
         url={url}
         setUrl={setUrl}

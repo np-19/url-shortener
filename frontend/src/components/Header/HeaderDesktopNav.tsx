@@ -10,8 +10,8 @@ interface HeaderDesktopNavProps {
 
 const navLinkClass = (pathname: string, to: string) =>
   pathname === to
-    ? 'rounded-full px-3 py-2 text-sm font-semibold bg-forest-500 text-white transition-all lg:px-4 lg:text-base'
-    : 'rounded-full px-3 py-2 text-sm font-medium text-silver-600 transition-colors hover:bg-beige-100 hover:text-silver-900 lg:px-4 lg:text-base';
+    ? 'rounded-xl px-3.5 py-2 text-sm font-bold bg-forest-500 text-white transition-all lg:px-4'
+    : 'rounded-xl px-3.5 py-2 text-sm font-semibold text-silver-500 transition-colors hover:bg-silver-100/50 hover:text-silver-800 lg:px-4';
 
 const HeaderDesktopNav = ({ isAuthenticated, user, onLogout }: HeaderDesktopNavProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -47,7 +47,7 @@ const HeaderDesktopNav = ({ isAuthenticated, user, onLogout }: HeaderDesktopNavP
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen((current) => !current)}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-forest-500/10 bg-forest-500 text-white transition-all duration-200 hover:bg-forest-600 focus:outline-none focus:ring-2 focus:ring-forest-400 focus:ring-offset-2"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-forest-600/10 bg-forest-500 text-white transition-all duration-200 hover:bg-forest-600 focus:outline-none"
               aria-label="User menu"
             >
               <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -21,7 +21,7 @@ const UrlShortenerResult = ({ shortUrl, onCopy }: UrlShortenerResultProps) => {
               value={shortUrl}
               readOnly
               onClick={(e) => (e.target as HTMLInputElement).select()}
-              className="w-full rounded-2xl border border-silver-200 bg-beige-50/50 px-5 py-4 font-mono text-sm font-bold text-forest-600 outline-none transition-all focus:border-forest-400 focus:bg-white select-all pr-12 shadow-inner"
+              className="w-full rounded-xl border border-silver-200 bg-white px-4 py-3.5 font-mono text-sm font-bold text-forest-600 outline-none transition-all focus:border-forest-400 select-all pr-12 shadow-2xs"
             />
             <div className="absolute right-4 text-forest-400 pointer-events-none">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,12 +32,12 @@ const UrlShortenerResult = ({ shortUrl, onCopy }: UrlShortenerResultProps) => {
 
           <button
             onClick={onCopy}
-            className="flex items-center justify-center gap-2 rounded-2xl bg-forest-500 hover:bg-forest-600 px-6 py-4 text-sm font-bold text-white shadow-soft transition-all duration-300 hover-glow cursor-pointer"
+            className="flex items-center justify-center gap-2 rounded-xl bg-forest-500 hover:bg-forest-600 px-5 py-3.5 text-sm font-bold text-white transition-all duration-200 cursor-pointer border border-forest-600/10 shadow-xs active:scale-98"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
             </svg>
-            Copy Link
+            <span>Copy Link</span>
           </button>
         </div>
       </div>

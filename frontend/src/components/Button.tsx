@@ -8,7 +8,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 const Button = ({
   children,
   type = 'button',
-  bgColor = 'bg-forest-500 hover:bg-forest-600 shadow-soft border border-forest-500/10',
+  bgColor = 'bg-forest-500 hover:bg-forest-600 border border-forest-600/10 shadow-xs',
   textColor = 'text-white',
   className = '',
   disabled = false,
@@ -18,8 +18,8 @@ const Button = ({
     <button
       type={type}
       disabled={disabled}
-      className={`flex justify-center items-center ${bgColor} ${textColor} ${className} rounded-full py-2 sm:py-2.5 px-6 sm:px-8 transition-all duration-300 font-medium text-sm sm:text-base hover-glow ${
-        disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+      className={`flex justify-center items-center ${bgColor} ${textColor} ${className} rounded-xl py-2 sm:py-2.5 px-6 transition-all duration-200 font-semibold text-sm sm:text-base ${
+        disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer active:scale-98'
       }`}
       {...props}
     >
