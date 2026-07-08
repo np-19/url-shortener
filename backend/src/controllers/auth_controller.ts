@@ -58,13 +58,13 @@ export const getMeController = async (
   req: AuthenticatedRequest,
   res: Response
 ): Promise<void> => {
-  if(!req.user) {
+  if (!req.user) {
     throw new ExpressError("Unauthorized", 401);
   }
   const userId: string = req.user.userId; //! is used to tell TypeScript that we are sure user is not undefined here.
-  
+
   const user = await findUserByIdDB(userId);
-  
+
   if (!user) {
     throw new ExpressError("User not found", 404);
   }
