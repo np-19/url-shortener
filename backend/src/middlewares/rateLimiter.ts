@@ -14,6 +14,7 @@ import { rateLimitWindowMs, rateLimitRequests } from '../config/constants.js';
 const WINDOW_MS = rateLimitWindowMs;
 const LIMIT = rateLimitRequests;
 const KEY_PREFIX = 'rate-limit';
+let hasLoggedRedisUnavailable = false;
 
 const getClientIdentifier = (req: Request): string => {
 	return req.ip || req.socket.remoteAddress || 'unknown';
@@ -28,8 +29,12 @@ export const rateLimiterMiddleware = async (req: Request, res: Response, next: N
 
 	try {
 		redisClient = getRedisClient();
+		hasLoggedRedisUnavailable = false;
 	} catch (error: any) {
-		console.error('Rate limiter disabled because Redis is unavailable: ', error.message);
+		if (!hasLoggedRedisUnavailable) {
+			console.error('Rate limiter disabled because Redis is unavailable:', error.message);
+			hasLoggedRedisUnavailable = true;
+		}
 		next();
 		return;
 	}

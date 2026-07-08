@@ -58,13 +58,13 @@ const startServer = async () => {
     try {
       await connectRedis();
       console.log("Redis connected");
-
-      await rebuildBloomFromDatabase();
-      console.log("Bloom filter rebuilt");
     } catch (err) {
       console.warn("Redis unavailable. Starting without Redis.");
       console.error(err);
     }
+
+    await rebuildBloomFromDatabase();
+    console.log("Bloom filter rebuilt");
 
     app.listen(port, () => {
       console.log(`Server running on http://localhost:${port}`);
