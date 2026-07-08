@@ -10,7 +10,7 @@ const HomeFeatureRail = () => (
 
       <div className="relative mb-5 sm:mb-6 flex items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-forest-400">Why LinkShort</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-forest-400">Why Snipr</p>
           <h3 className="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight text-silver-900">Built for clarity and speed</h3>
         </div>
       </div>

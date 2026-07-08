@@ -18,13 +18,13 @@ const NotFoundPage = () => {
           <div className="space-y-4 text-silver-500 text-base sm:text-lg leading-relaxed font-medium">
             <p>
               You may have mis-typed the URL or simply clicked on a broken link or QR code. 
-              LinkShort links are <span className="font-extrabold text-silver-800">case-sensitive</span>, 
+              Snipr links are <span className="font-extrabold text-silver-800">case-sensitive</span>, 
               so double check that everything is correct and try again.
             </p>
             <p>
               If you continue to see this error, we suggest reaching out to the person or 
               organization that shared it with you. P.S. You do not need to sign up (or sign in) 
-              to access a LinkShort link.
+              to access a Snipr link.
             </p>
           </div>
           <div className="pt-4">

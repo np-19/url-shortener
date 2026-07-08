@@ -45,7 +45,7 @@ const Logo = ({ width = '120px', size = 24, variant = 'text' }: LogoProps) => {
         />
       </svg>
       <span className={`text-xl font-bold ${textColor}`}>
-        LinkShort
+        Snipr
       </span>
     </div>
   );
