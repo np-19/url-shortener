@@ -15,6 +15,9 @@ const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
     setUrl,
     customAlias,
     setCustomAlias,
+    onCustomAliasBlur,
+    customAliasError,
+    customAliasChecking,
     showCustomAlias,
     setShowCustomAlias,
     expiresIn,
@@ -42,6 +45,9 @@ const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
         setUrl={setUrl}
         customAlias={customAlias}
         setCustomAlias={setCustomAlias}
+        onCustomAliasBlur={onCustomAliasBlur}
+        customAliasError={customAliasError}
+        customAliasChecking={customAliasChecking}
         showCustomAlias={showCustomAlias}
         setShowCustomAlias={setShowCustomAlias}
         expiresIn={expiresIn}

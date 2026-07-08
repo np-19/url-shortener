@@ -13,6 +13,9 @@ const UrlShortenerFields = ({
   setUrl,
   customAlias,
   setCustomAlias,
+  onCustomAliasBlur,
+  customAliasError,
+  customAliasChecking,
   showCustomAlias,
   setShowCustomAlias,
   expiresIn,
@@ -63,7 +66,15 @@ const UrlShortenerFields = ({
       {showAdvanced && (
         <div className="space-y-4 sm:space-y-5 animate-fadeIn p-5 bg-silver-50/50 rounded-2xl border border-silver-100">
           <CustomAliasToggle checked={showCustomAlias} onChange={handleAliasToggle} />
-      {showCustomAlias && <CustomAliasField value={customAlias} onChange={setCustomAlias} />}
+      {showCustomAlias && (
+        <CustomAliasField
+          value={customAlias}
+          onChange={setCustomAlias}
+          onBlur={onCustomAliasBlur}
+          error={customAliasError}
+          checking={customAliasChecking}
+        />
+      )}
 
       <ExpirationSelect value={expiresIn} onChange={setExpiresIn} onNonCustomSelected={() => setIsCalendarOpen(false)} />
 

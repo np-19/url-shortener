@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import urlService from '../services/urlService';
 import { urlDataSchema } from '../schemas/apiSchemas';
+import { useDebouncedCallback } from './useDebouncedCallback';
 
 const dayInSeconds = 24 * 60 * 60;
 
@@ -25,10 +26,89 @@ export const useUrlShortenerForm = (onUrlCreated: () => void) => {
   const [shortUrl, setShortUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [customAliasError, setCustomAliasError] = useState('');
+  const [customAliasChecking, setCustomAliasChecking] = useState(false);
+  const aliasRequestCounter = useRef(0);
+
+  const isAliasFormatValid = (alias: string): boolean => {
+    return /^[A-Za-z0-9-]{2,50}$/.test(alias);
+  };
+
+  const runAliasAvailabilityCheck = useCallback(async (candidateAlias: string): Promise<boolean> => {
+    const normalized = candidateAlias.trim();
+
+    if (!showCustomAlias || normalized.length === 0) {
+      setCustomAliasError('');
+      setCustomAliasChecking(false);
+      return true;
+    }
+
+    if (!isAliasFormatValid(normalized)) {
+      setCustomAliasError('Use 2-50 letters, numbers, or hyphens only.');
+      setCustomAliasChecking(false);
+      return false;
+    }
+
+    const requestId = ++aliasRequestCounter.current;
+    setCustomAliasChecking(true);
+
+    try {
+      const result = await urlService.checkAliasAvailability(normalized);
+      if (requestId !== aliasRequestCounter.current) {
+        return result.available;
+      }
+
+      if (!result.available) {
+        setCustomAliasError('This custom alias is already in use.');
+        return false;
+      }
+
+      setCustomAliasError('');
+      return true;
+    } catch {
+      if (requestId === aliasRequestCounter.current) {
+        setCustomAliasError('Could not verify alias right now. Please try again.');
+      }
+      return false;
+    } finally {
+      if (requestId === aliasRequestCounter.current) {
+        setCustomAliasChecking(false);
+      }
+    }
+  }, [showCustomAlias]);
+
+  const { debounced: debouncedAliasCheck, cancel: cancelDebouncedAliasCheck } = useDebouncedCallback(
+    (candidateAlias: string) => {
+      void runAliasAvailabilityCheck(candidateAlias);
+    },
+    500
+  );
+
+  useEffect(() => {
+    if (!showCustomAlias) {
+      cancelDebouncedAliasCheck();
+      setCustomAliasError('');
+      setCustomAliasChecking(false);
+    }
+  }, [cancelDebouncedAliasCheck, showCustomAlias]);
+
+  const handleCustomAliasChange = (value: string) => {
+    setCustomAlias(value);
+    setCustomAliasError('');
+    if (showCustomAlias) {
+      debouncedAliasCheck(value);
+    }
+  };
+
+  const handleCustomAliasBlur = () => {
+    cancelDebouncedAliasCheck();
+    void runAliasAvailabilityCheck(customAlias);
+  };
 
   const resetForm = () => {
     setUrl('');
     setCustomAlias('');
+    setCustomAliasError('');
     setShowCustomAlias(false);
     setExpiresIn('never');
     setCustomExpiresDate('');
@@ -69,6 +149,12 @@ export const useUrlShortenerForm = (onUrlCreated: () => void) => {
       return;
     }
 
+    cancelDebouncedAliasCheck();
+    const isAliasAvailable = await runAliasAvailabilityCheck(customAlias);
+    if (!isAliasAvailable) {
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -93,7 +179,10 @@ export const useUrlShortenerForm = (onUrlCreated: () => void) => {
     url,
     setUrl,
     customAlias,
-    setCustomAlias,
+    setCustomAlias: handleCustomAliasChange,
+    onCustomAliasBlur: handleCustomAliasBlur,
+    customAliasError,
+    customAliasChecking,
     showCustomAlias,
     setShowCustomAlias,
     expiresIn,

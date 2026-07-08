@@ -1,19 +1,72 @@
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { clearError, registerUser, setError } from '../../store/slices/authSlice';
 import Button from '../Button';
 import { registerDataSchema } from '../../schemas/apiSchemas';
 import AuthSplitPage from './AuthSplitPage';
+import authService from '../../services/authService';
+import { useDebouncedCallback } from '../../hooks/useDebouncedCallback';
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [emailAvailabilityError, setEmailAvailabilityError] = useState('');
+  const [emailChecking, setEmailChecking] = useState(false);
+  const emailRequestCounter = useRef(0);
 
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
+
+  const isEmailFormatValid = (candidate: string): boolean => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(candidate);
+  };
+
+  const runEmailAvailabilityCheck = useCallback(async (candidateEmail: string): Promise<boolean> => {
+    const normalized = candidateEmail.trim().toLowerCase();
+
+    if (!normalized || !isEmailFormatValid(normalized)) {
+      setEmailAvailabilityError('');
+      setEmailChecking(false);
+      return true;
+    }
+
+    const requestId = ++emailRequestCounter.current;
+    setEmailChecking(true);
+
+    try {
+      const result = await authService.checkEmailAvailability(normalized);
+      if (requestId !== emailRequestCounter.current) {
+        return result.available;
+      }
+
+      if (!result.available) {
+        setEmailAvailabilityError('An account with this email already exists. Please log in instead.');
+        return false;
+      }
+
+      setEmailAvailabilityError('');
+      return true;
+    } catch {
+      if (requestId === emailRequestCounter.current) {
+        setEmailAvailabilityError('Could not verify email right now. Please try again.');
+      }
+      return false;
+    } finally {
+      if (requestId === emailRequestCounter.current) {
+        setEmailChecking(false);
+      }
+    }
+  }, []);
+
+  const { debounced: debouncedEmailCheck, cancel: cancelDebouncedEmailCheck } = useDebouncedCallback(
+    (candidateEmail: string) => {
+      void runEmailAvailabilityCheck(candidateEmail);
+    },
+    500
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,6 +74,12 @@ const Register = () => {
     const validatedData = registerDataSchema.safeParse({ name, email, password });
     if (!validatedData.success) {
       dispatch(setError(validatedData.error.issues[0]?.message ?? 'Please enter valid registration details'));
+      return;
+    }
+
+    cancelDebouncedEmailCheck();
+    const isEmailAvailable = await runEmailAvailabilityCheck(email);
+    if (!isEmailAvailable) {
       return;
     }
 
@@ -65,7 +124,25 @@ const Register = () => {
           <label htmlFor="email" className="mb-2 block text-sm font-bold text-silver-700">
             Email Address
           </label>
-          <input id="email" type="email" value={email} onChange={(e) => { if (error) dispatch(clearError()); setEmail(e.target.value); }} placeholder="john@example.com" className="w-full rounded-2xl border border-silver-200 bg-beige-50 px-5 py-4 font-medium text-silver-900 shadow-inner outline-none transition-all placeholder-silver-400 focus:border-silver-400 focus:ring-2 focus:ring-forest-500/20" />
+          <input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => {
+              if (error) dispatch(clearError());
+              setEmailAvailabilityError('');
+              setEmail(e.target.value);
+              debouncedEmailCheck(e.target.value);
+            }}
+            onBlur={() => {
+              cancelDebouncedEmailCheck();
+              void runEmailAvailabilityCheck(email);
+            }}
+            placeholder="john@example.com"
+            className="w-full rounded-2xl border border-silver-200 bg-beige-50 px-5 py-4 font-medium text-silver-900 shadow-inner outline-none transition-all placeholder-silver-400 focus:border-silver-400 focus:ring-2 focus:ring-forest-500/20"
+          />
+          {emailChecking && <p className="mt-2 ml-2 text-xs font-medium text-silver-500">Checking email availability...</p>}
+          {emailAvailabilityError && <p className="mt-2 ml-2 text-xs font-medium text-apple-600">{emailAvailabilityError}</p>}
         </div>
 
         <div>

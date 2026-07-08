@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { createUrlService } from "../services/url_service.js";
 import { ExpressError } from "../utils/expressError.js";
-import { findUrlByShortIdDB, getAllUrlsDB, getUrlsByUserIdDB, getUrlsByUserIdForAnalyticsDB, incrementClicksDB } from "../dao/url_dao.js";
+import { findUrlByShortIdDB, getAllUrlsDB, getUrlsByUserIdDB, getUrlsByUserIdForAnalyticsDB, incrementClicksDB, isAliasInUseDB } from "../dao/url_dao.js";
 import { getCachedUrl, setCachedUrl, incrementCachedClicks } from "../services/cache_service.js";
 import { addToBloom, mightExistInBloom } from "../services/bloom_service.js";
 import { getAnalyticsSummary } from "../services/analytics_service.js";
@@ -134,4 +134,22 @@ export const getAnalyticsController = async (
   const analytics = await getAnalyticsSummary(userId, userUrls);
   res.status(200).json(analytics);
   return;
+};
+
+export const checkAliasAvailabilityController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const alias = String(req.query.alias ?? '').trim();
+
+  if (!alias) {
+    throw new ExpressError('Alias is required', 400);
+  }
+
+  const isInUse = await isAliasInUseDB(alias);
+
+  res.status(200).json({
+    available: !isInUse,
+    message: isInUse ? 'Alias is already in use' : 'Alias is available',
+  });
 };

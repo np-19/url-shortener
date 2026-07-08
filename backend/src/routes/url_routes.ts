@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { redirectUrlController, createUrlController, getAllUrlsController, getMyUrlsController, getAnalyticsController } from "../controllers/url_controller.js";
+import { redirectUrlController, createUrlController, getAllUrlsController, getMyUrlsController, getAnalyticsController, checkAliasAvailabilityController } from "../controllers/url_controller.js";
 import { wrapAsync } from "../utils/wrapAsync.js";
 import { optionalAuth, authenticate } from "../middlewares/auth.js";
 
@@ -19,6 +19,9 @@ router.route("/my-urls")
 
 router.route("/analytics")
 .get(authenticate, wrapAsync(getAnalyticsController));
+
+router.route("/check-alias")
+.get(wrapAsync(checkAliasAvailabilityController));
 
 
 

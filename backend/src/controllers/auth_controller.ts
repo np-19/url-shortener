@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { registerUser, loginUser, refreshUserToken } from "../services/auth_service.js";
 import { ExpressError } from "../utils/expressError.js";
-import { findUserByIdDB } from "../dao/user_dao.js";
+import { findUserByIdDB, isEmailInUseDB } from "../dao/user_dao.js";
 import { createUserSchema, loginUserSchema } from "../validations/user_val.js";
 import { formatZodError } from "../utils/zodError.js";
 
@@ -99,4 +99,22 @@ export const refreshTokenController = async (
   } catch (error: any) {
     throw new ExpressError(error.message, 401);
   }
+};
+
+export const checkEmailAvailabilityController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const email = String(req.query.email ?? '').trim().toLowerCase();
+
+  if (!email) {
+    throw new ExpressError('Email is required', 400);
+  }
+
+  const isInUse = await isEmailInUseDB(email);
+
+  res.status(200).json({
+    available: !isInUse,
+    message: isInUse ? 'Email is already in use' : 'Email is available',
+  });
 };

@@ -4,6 +4,7 @@ import {
   loginController,
   getMeController,
   refreshTokenController,
+  checkEmailAvailabilityController,
 } from "../controllers/auth_controller.js";
 import { wrapAsync } from "../utils/wrapAsync.js";
 import { authenticate } from "../middlewares/auth.js";
@@ -17,5 +18,7 @@ router.route("/login").post(wrapAsync(loginController));
 router.route("/me").get(authenticate, wrapAsync(getMeController));
 
 router.route("/refresh").post(wrapAsync(refreshTokenController));
+
+router.route("/check-email").get(wrapAsync(checkEmailAvailabilityController));
 
 export default router;

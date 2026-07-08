@@ -105,6 +105,18 @@ class AuthService {
     return !!this.getAccessToken();
   }
 
+  async checkEmailAvailability(email: string): Promise<{ available: boolean; message?: string }> {
+    const response = await apiClient.get('/auth/check-email', {
+      params: { email },
+    });
+
+    const payload = response.data as { available?: boolean; message?: string };
+    return {
+      available: Boolean(payload.available),
+      message: payload.message,
+    };
+  }
+
   async register(data: RegisterData): Promise<AuthResponse> {
     const validatedData = registerDataSchema.safeParse(data);
     if (!validatedData.success) {

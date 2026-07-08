@@ -101,6 +101,22 @@ class UrlService {
     }
   }
 
+  async checkAliasAvailability(alias: string): Promise<{ available: boolean; message?: string }> {
+    try {
+      const response = await apiClient.get('/check-alias', {
+        params: { alias },
+      });
+
+      const payload = response.data as { available?: boolean; message?: string };
+      return {
+        available: Boolean(payload.available),
+        message: payload.message,
+      };
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, 'Failed to validate custom alias'));
+    }
+  }
+
   getShortUrl(shortId: string): string {
     return `${this.backendUrl}/${shortId}`;
   }

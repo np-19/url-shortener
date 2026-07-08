@@ -19,6 +19,11 @@ export const findUserByEmailDB = async (email: string): Promise<IUser | null> =>
   return await UserModel.findOne({ email }).select("+password");
 };
 
+export const isEmailInUseDB = async (email: string): Promise<boolean> => {
+  const user = await UserModel.exists({ email });
+  return user !== null;
+};
+
 export const findUserByIdDB = async (userId: string): Promise<IUser | null> => {
   return await UserModel.findById(userId);
 };

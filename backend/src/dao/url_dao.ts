@@ -22,6 +22,11 @@ export const findUrlByShortIdDB = async (shortId: string) : Promise<IUrl | null>
     return url;
 }
 
+export const isAliasInUseDB = async (shortId: string): Promise<boolean> => {
+    const url = await UrlModel.exists({ shortId });
+    return url !== null;
+}
+
 export const getAllUrlsDB = async (cursor?: string, limit: number = 20) : Promise<IUrl[]> => {
     const query = cursor ? { _id: { $lt: cursor } } : {};
     const urls: IUrl[] = await UrlModel.find(query)
