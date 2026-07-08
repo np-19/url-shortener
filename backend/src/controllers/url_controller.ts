@@ -8,7 +8,7 @@ import { getAnalyticsSummary } from "../services/analytics_service.js";
 import type { CreateUrlRecord } from "../types/url_types.js";
 import { createUrlSchema, type CreateUrlInput } from "../validations/url_val.js";
 import { formatZodError } from "../utils/zodError.js";
-import { neverExpiresAt } from "../config/constants.js";
+import { neverExpiresAt, frontendUrl } from "../config/constants.js";
 
 
 export const createUrlController = async (
@@ -51,7 +51,10 @@ export const redirectUrlController = async (req: Request, res: Response): Promis
   const { shortId } = req.params;
   // Fast negative check using Bloom filter to avoid unnecessary DB lookups
   const mightExist = await mightExistInBloom(shortId);
-  if (!mightExist) throw new ExpressError("URL not found", 404);
+  if (!mightExist) {
+    res.redirect(frontendUrl);
+    return;
+  }
   
   const cached = await getCachedUrl(shortId);
   let originalUrl: string = "";
@@ -60,7 +63,10 @@ export const redirectUrlController = async (req: Request, res: Response): Promis
     originalUrl = cached.originalUrl;
   } else {
     const url = await findUrlByShortIdDB(shortId);
-    if (!url) throw new ExpressError("URL not found", 404);
+    if (!url) {
+      res.redirect(frontendUrl);
+      return;
+    }
     originalUrl = url.originalUrl;
 
     // Background task: Populate cache
