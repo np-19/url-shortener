@@ -28,6 +28,7 @@ export const useUrlShortenerForm = (onUrlCreated: () => void) => {
   const [error, setError] = useState('');
   const [customAliasError, setCustomAliasError] = useState('');
   const [customAliasChecking, setCustomAliasChecking] = useState(false);
+  const [customAliasAvailable, setCustomAliasAvailable] = useState<boolean | null>(null);
   const aliasRequestCounter = useRef(0);
 
   const isAliasFormatValid = (alias: string): boolean => {
@@ -39,18 +40,21 @@ export const useUrlShortenerForm = (onUrlCreated: () => void) => {
 
     if (!showCustomAlias || normalized.length === 0) {
       setCustomAliasError('');
+      setCustomAliasAvailable(null);
       setCustomAliasChecking(false);
       return true;
     }
 
     if (!isAliasFormatValid(normalized)) {
       setCustomAliasError('Use 2-50 letters, numbers, or hyphens only.');
+      setCustomAliasAvailable(false);
       setCustomAliasChecking(false);
       return false;
     }
 
     const requestId = ++aliasRequestCounter.current;
     setCustomAliasChecking(true);
+    setCustomAliasAvailable(null);
 
     try {
       const result = await urlService.checkAliasAvailability(normalized);
@@ -60,14 +64,17 @@ export const useUrlShortenerForm = (onUrlCreated: () => void) => {
 
       if (!result.available) {
         setCustomAliasError('This custom alias is already in use.');
+        setCustomAliasAvailable(false);
         return false;
       }
 
       setCustomAliasError('');
+      setCustomAliasAvailable(true);
       return true;
     } catch {
       if (requestId === aliasRequestCounter.current) {
         setCustomAliasError('Could not verify alias right now. Please try again.');
+        setCustomAliasAvailable(false);
       }
       return false;
     } finally {
@@ -89,12 +96,14 @@ export const useUrlShortenerForm = (onUrlCreated: () => void) => {
       cancelDebouncedAliasCheck();
       setCustomAliasError('');
       setCustomAliasChecking(false);
+      setCustomAliasAvailable(null);
     }
   }, [cancelDebouncedAliasCheck, showCustomAlias]);
 
   const handleCustomAliasChange = (value: string) => {
     setCustomAlias(value);
     setCustomAliasError('');
+    setCustomAliasAvailable(null);
     if (showCustomAlias) {
       debouncedAliasCheck(value);
     }
@@ -109,6 +118,7 @@ export const useUrlShortenerForm = (onUrlCreated: () => void) => {
     setUrl('');
     setCustomAlias('');
     setCustomAliasError('');
+    setCustomAliasAvailable(null);
     setShowCustomAlias(false);
     setExpiresIn('never');
     setCustomExpiresDate('');
@@ -183,6 +193,7 @@ export const useUrlShortenerForm = (onUrlCreated: () => void) => {
     onCustomAliasBlur: handleCustomAliasBlur,
     customAliasError,
     customAliasChecking,
+    customAliasAvailable,
     showCustomAlias,
     setShowCustomAlias,
     expiresIn,

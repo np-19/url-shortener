@@ -10,6 +10,7 @@ export interface UrlShortenerFieldsProps {
   onCustomAliasBlur: () => void;
   customAliasError: string;
   customAliasChecking: boolean;
+  customAliasAvailable: boolean | null;
   showCustomAlias: boolean;
   setShowCustomAlias: (value: boolean) => void;
   expiresIn: ExpirationValue;

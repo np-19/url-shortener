@@ -4,9 +4,10 @@ interface CustomAliasFieldProps {
   onBlur: () => void;
   error: string;
   checking: boolean;
+  available: boolean | null;
 }
 
-const CustomAliasField = ({ value, onChange, onBlur, error, checking }: CustomAliasFieldProps) => (
+const CustomAliasField = ({ value, onChange, onBlur, error, checking, available }: CustomAliasFieldProps) => (
   <div className="animate-fadeIn">
     <input
       type="text"
@@ -22,6 +23,9 @@ const CustomAliasField = ({ value, onChange, onBlur, error, checking }: CustomAl
     </p>
     {checking && <p className="mt-2 ml-2 text-xs font-medium text-silver-500">Checking alias availability...</p>}
     {error && <p className="mt-2 ml-2 text-xs font-medium text-apple-600">{error}</p>}
+    {!checking && available && value.trim().length > 0 && (
+      <p className="mt-2 ml-2 text-xs font-medium text-green-600">✓ Custom alias is available!</p>
+    )}
   </div>
 );
 

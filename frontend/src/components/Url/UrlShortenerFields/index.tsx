@@ -16,6 +16,7 @@ const UrlShortenerFields = ({
   onCustomAliasBlur,
   customAliasError,
   customAliasChecking,
+  customAliasAvailable,
   showCustomAlias,
   setShowCustomAlias,
   expiresIn,
@@ -73,6 +74,7 @@ const UrlShortenerFields = ({
           onBlur={onCustomAliasBlur}
           error={customAliasError}
           checking={customAliasChecking}
+          available={customAliasAvailable}
         />
       )}
 

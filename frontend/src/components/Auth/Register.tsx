@@ -14,6 +14,7 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [emailAvailabilityError, setEmailAvailabilityError] = useState('');
   const [emailChecking, setEmailChecking] = useState(false);
+  const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
   const emailRequestCounter = useRef(0);
 
   const dispatch = useAppDispatch();
@@ -29,12 +30,14 @@ const Register = () => {
 
     if (!normalized || !isEmailFormatValid(normalized)) {
       setEmailAvailabilityError('');
+      setEmailAvailable(null);
       setEmailChecking(false);
       return true;
     }
 
     const requestId = ++emailRequestCounter.current;
     setEmailChecking(true);
+    setEmailAvailable(null);
 
     try {
       const result = await authService.checkEmailAvailability(normalized);
@@ -44,14 +47,17 @@ const Register = () => {
 
       if (!result.available) {
         setEmailAvailabilityError('An account with this email already exists. Please log in instead.');
+        setEmailAvailable(false);
         return false;
       }
 
       setEmailAvailabilityError('');
+      setEmailAvailable(true);
       return true;
     } catch {
       if (requestId === emailRequestCounter.current) {
         setEmailAvailabilityError('Could not verify email right now. Please try again.');
+        setEmailAvailable(false);
       }
       return false;
     } finally {
@@ -131,6 +137,7 @@ const Register = () => {
             onChange={(e) => {
               if (error) dispatch(clearError());
               setEmailAvailabilityError('');
+              setEmailAvailable(null);
               setEmail(e.target.value);
               debouncedEmailCheck(e.target.value);
             }}
@@ -143,6 +150,9 @@ const Register = () => {
           />
           {emailChecking && <p className="mt-2 ml-2 text-xs font-medium text-silver-500">Checking email availability...</p>}
           {emailAvailabilityError && <p className="mt-2 ml-2 text-xs font-medium text-apple-600">{emailAvailabilityError}</p>}
+          {!emailChecking && emailAvailable && email.trim().length > 0 && (
+            <p className="mt-2 ml-2 text-xs font-medium text-green-600">✓ Email address is available!</p>
+          )}
         </div>
 
         <div>
