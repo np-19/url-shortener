@@ -108,7 +108,7 @@ apiClient.interceptors.response.use(
         processQueue(err, null);
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        window.location.href = '/login';
+        window.dispatchEvent(new CustomEvent('auth:unauthorized'));
         return Promise.reject(err);
       } finally {
         isRefreshing = false;

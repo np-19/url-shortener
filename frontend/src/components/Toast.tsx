@@ -41,7 +41,7 @@ const Toast = ({ message, type = 'success', onClose, duration = 3000 }: ToastPro
   }[type];
 
   return (
-    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 animate-slideIn max-w-[calc(100vw-2rem)] sm:max-w-md">
+    <div className="animate-slideIn pointer-events-auto w-full max-w-[calc(100vw-2rem)] sm:max-w-md">
       <div className={`${bgColor} text-white px-4 py-3 sm:px-6 sm:py-4 rounded-lg shadow-2xl flex items-center gap-2 sm:gap-3 min-w-[280px] sm:min-w-[300px]`}>
         <div className="shrink-0">{icon}</div>
         <p className="text-xs sm:text-sm font-medium flex-1 wrap-break-word">{message}</p>

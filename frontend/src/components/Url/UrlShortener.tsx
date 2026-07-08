@@ -1,4 +1,3 @@
-import Toast from '../Toast';
 import { useCopyToast } from '../../hooks/useCopyToast';
 import { useUrlShortenerForm } from '../../hooks/useUrlShortenerForm';
 import UrlShortenerFields from './UrlShortenerFields';
@@ -9,7 +8,7 @@ interface UrlShortenerProps {
 }
 
 const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
-  const { toast, setToast, copyText } = useCopyToast();
+  const { copyText } = useCopyToast();
   const {
     url,
     setUrl,
@@ -63,7 +62,6 @@ const UrlShortener = ({ onUrlCreated }: UrlShortenerProps) => {
 
       {shortUrl && <UrlShortenerResult shortUrl={shortUrl} onCopy={() => copyText(shortUrl)} />}
 
-      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
 };

@@ -34,6 +34,7 @@ export const usePaginatedUrls = (queryKey: string, fetchUrls: FetchUrls) => {
     urls,
     loading: query.isLoading,
     loadingMore: query.isFetchingNextPage,
+    isRefreshing: query.isRefetching,
     error: query.error instanceof Error ? query.error.message : '',
     hasMore,
     nextCursor,

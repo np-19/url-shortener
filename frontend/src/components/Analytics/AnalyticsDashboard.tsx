@@ -1,5 +1,4 @@
 import LoadingBar from '../LoadingBar';
-import Toast from '../Toast';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import { useCopyToast } from '../../hooks/useCopyToast';
 import UrlListEmptyState from '../UrlList/UrlListEmptyState';
@@ -10,8 +9,8 @@ import ClicksTimelineChart from './ClicksTimelineChart';
 import ClicksBarChart from './ClicksBarChart';
 
 const AnalyticsDashboard = () => {
-  const { analytics, loading, error, refresh } = useAnalytics();
-  const { toast, setToast, copyText } = useCopyToast();
+  const { analytics, loading, isRefreshing, error, refresh } = useAnalytics();
+  const { copyText } = useCopyToast();
 
   if (loading) {
     return <LoadingBar message="Loading analytics..." />;
@@ -39,7 +38,7 @@ const AnalyticsDashboard = () => {
 
   return (
     <div className="w-full space-y-5 animate-fadeIn pb-8">
-      <AnalyticsHeader lastUpdated={analytics.lastUpdated} onRefresh={refresh} />
+      <AnalyticsHeader lastUpdated={analytics.lastUpdated} onRefresh={refresh} refreshing={isRefreshing} />
 
       {/* Stats row */}
       <AnalyticsStatsGrid analytics={analytics} />
@@ -52,8 +51,6 @@ const AnalyticsDashboard = () => {
 
       {/* Trending */}
       <AnalyticsTrendingPanel trending={analytics.trending} onCopy={copyShortUrl} />
-
-      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
 };

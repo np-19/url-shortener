@@ -1,15 +1,13 @@
-import { useState } from 'react';
 import { useAppSelector } from '../store/hooks';
 import HomeHero from '../components/Home/HomeHero';
 import HomeFeatureRail from '../components/Home/HomeFeatureRail';
-import { UrlShortener } from '../components';
+import UrlShortener from '../components/Url/UrlShortener';
 
 const Home = () => {
-  const [, setRefreshKey] = useState(0);
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
 
   const handleUrlCreated = () => {
-    setRefreshKey((prev) => prev + 1);
+    // URL created callback
   };
 
   if (isAuthenticated) {

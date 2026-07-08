@@ -1,25 +1,16 @@
-import { useState } from 'react';
-
-type ToastType = 'success' | 'error' | 'info';
-
-interface ToastState {
-  message: string;
-  type: ToastType;
-}
+import { useToast } from '../context/ToastContext';
 
 export const useCopyToast = () => {
-  const [toast, setToast] = useState<ToastState | null>(null);
+  const toast = useToast();
 
   const copyText = async (text: string, successMessage = 'Copied to clipboard!') => {
     try {
       await navigator.clipboard.writeText(text);
-      setToast({ message: successMessage, type: 'success' });
+      toast.success(successMessage);
     } catch {
-      setToast({ message: 'Unable to copy to clipboard', type: 'error' });
+      toast.error('Unable to copy to clipboard');
     }
   };
 
-  return { toast, setToast, copyText };
+  return { copyText };
 };
-
-export type { ToastType, ToastState };

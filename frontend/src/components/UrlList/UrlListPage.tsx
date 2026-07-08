@@ -1,5 +1,4 @@
 import LoadingBar from '../LoadingBar';
-import Toast from '../Toast';
 import { useCopyToast } from '../../hooks/useCopyToast';
 import { usePaginatedUrls } from '../../hooks/usePaginatedUrls';
 import type { UrlsResponse } from '../../services';
@@ -19,8 +18,8 @@ interface UrlListPageProps {
 }
 
 const UrlListPage = ({ queryKey, title, loadMessage, fetchUrls, emptyTitle, emptyDescription, showEmptyButton = false }: UrlListPageProps) => {
-  const { urls, loading, loadingMore, error, hasMore, refresh, loadMore } = usePaginatedUrls(queryKey, fetchUrls);
-  const { toast, setToast, copyText } = useCopyToast();
+  const { urls, loading, loadingMore, isRefreshing, error, hasMore, refresh, loadMore } = usePaginatedUrls(queryKey, fetchUrls);
+  const { copyText } = useCopyToast();
 
   if (loading) {
     return <LoadingBar message={loadMessage} />;
@@ -32,14 +31,13 @@ const UrlListPage = ({ queryKey, title, loadMessage, fetchUrls, emptyTitle, empt
 
   return (
     <div className="animate-fadeIn bg-transparent">
-      <UrlListHeader title={title} onRefresh={refresh} />
+      <UrlListHeader title={title} onRefresh={refresh} refreshing={isRefreshing} />
       {urls.length === 0 ? (
         <UrlListEmptyState title={emptyTitle} description={emptyDescription} showButton={showEmptyButton} />
       ) : (
         <UrlListGrid urls={urls} onCopy={copyText} />
       )}
       <UrlListFooter loadedCount={urls.length} hasMore={hasMore} loadingMore={loadingMore} onLoadMore={loadMore} />
-      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
 };

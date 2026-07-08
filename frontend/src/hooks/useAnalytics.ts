@@ -46,6 +46,7 @@ export const useAnalytics = () => {
   return {
     analytics: query.data ?? null,
     loading: query.isLoading,
+    isRefreshing: query.isRefetching,
     error: query.error instanceof Error ? query.error.message : '',
     refresh: query.refetch,
   };

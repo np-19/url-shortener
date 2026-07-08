@@ -1,4 +1,4 @@
-import { AnalyticsDashboard } from '../components';
+import AnalyticsDashboard from '../components/Analytics/AnalyticsDashboard';
 import Container from '../components/Container/Container';
 
 const AnalyticsPage = () => {

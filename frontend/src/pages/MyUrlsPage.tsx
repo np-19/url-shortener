@@ -1,4 +1,4 @@
-import { MyUrls } from '../components';
+import MyUrls from '../components/MyUrls/MyUrls';
 
 const MyUrlsPage = () => {
   return <MyUrls />;

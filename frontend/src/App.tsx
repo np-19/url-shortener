@@ -1,11 +1,19 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, Suspense } from 'react';
 import { store } from './store';
 import { useAppDispatch, useAppSelector } from './store/hooks';
-import { initializeAuth } from './store/slices/authSlice';
-import { Header, Footer, Container } from './components';
-import { Home, LoginPage, RegisterPage, MyUrlsPage, AnalyticsPage } from './pages';
+import { initializeAuth, logoutUser } from './store/slices/authSlice';
+import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
+import Container from './components/Container/Container';
+import LoadingBar from './components/LoadingBar';
+import Home from './pages/Home';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+
+const MyUrlsPage = React.lazy(() => import('./pages/MyUrlsPage'));
+const AnalyticsPage = React.lazy(() => import('./pages/AnalyticsPage'));
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -54,6 +62,14 @@ const AppContent = () => {
     dispatch(initializeAuth());
   }, [dispatch]);
 
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      dispatch(logoutUser());
+    };
+    window.addEventListener('auth:unauthorized', handleUnauthorized);
+    return () => window.removeEventListener('auth:unauthorized', handleUnauthorized);
+  }, [dispatch]);
+
   return (
     <div className="min-h-screen bg-beige-50 text-silver-800 flex flex-col font-sans selection:bg-forest-500/20 relative">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white via-beige-50 to-beige-100 -z-10"></div>
@@ -61,41 +77,43 @@ const AppContent = () => {
 
       <main className="flex-1 py-6 sm:py-8 lg:py-12">
         <Container>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route
-              path="/analytics"
-              element={
-                <ProtectedRoute>
-                  <AnalyticsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/login"
-              element={
-                <GuestRoute>
-                  <LoginPage />
-                </GuestRoute>
-              }
-            />
-            <Route
-              path="/register"
-              element={
-                <GuestRoute>
-                  <RegisterPage />
-                </GuestRoute>
-              }
-            />
-            <Route
-              path="/my-urls"
-              element={
-                <ProtectedRoute>
-                  <MyUrlsPage />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
+          <Suspense fallback={<LoadingBar message="Loading page..." />}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route
+                path="/analytics"
+                element={
+                  <ProtectedRoute>
+                    <AnalyticsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/login"
+                element={
+                  <GuestRoute>
+                    <LoginPage />
+                  </GuestRoute>
+                }
+              />
+              <Route
+                path="/register"
+                element={
+                  <GuestRoute>
+                    <RegisterPage />
+                  </GuestRoute>
+                }
+              />
+              <Route
+                path="/my-urls"
+                element={
+                  <ProtectedRoute>
+                    <MyUrlsPage />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </Suspense>
         </Container>
       </main>
 
