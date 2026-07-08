@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
-import Button from '../Button';
 import { headerLinks } from './headerLinks';
+import HeaderAuthActions from './HeaderAuthActions';
 
 interface HeaderMobileMenuProps {
   isAuthenticated: boolean;
@@ -62,18 +62,11 @@ const HeaderMobileMenu = ({ isAuthenticated, user, onLogout, onClose }: HeaderMo
             </button>
           </>
         ) : (
-          <>
-            <Link
-              to="/login"
-              className={mobileLinkClass(pathname, '/login')}
-              onClick={onClose}
-            >
-              Login
-            </Link>
-            <Link to="/register" onClick={onClose} className="mt-2 block">
-              <Button className="w-full text-center">Sign Up</Button>
-            </Link>
-          </>
+          <HeaderAuthActions
+            layoutClassName="mt-2 flex flex-col gap-2"
+            buttonClassName="w-full text-center"
+            onNavigate={onClose}
+          />
         )}
       </div>
     </div>

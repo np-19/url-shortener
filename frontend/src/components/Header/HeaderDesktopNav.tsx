@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import Button from '../Button';
 import { useOutsideClick } from '../../hooks/useOutsideClick';
 import { headerLinks } from './headerLinks';
+import HeaderAuthActions from './HeaderAuthActions';
 
 interface HeaderDesktopNavProps {
   isAuthenticated: boolean;
@@ -80,17 +80,7 @@ const HeaderDesktopNav = ({ isAuthenticated, user, onLogout }: HeaderDesktopNavP
           </div>
         </>
       ) : (
-        <>
-          <Link
-            to="/login"
-            className={navLinkClass(pathname, '/login')}
-          >
-            Login
-          </Link>
-          <Link to="/register">
-            <Button className="px-3 py-1.5 text-sm lg:px-4 lg:py-2">Sign Up</Button>
-          </Link>
-        </>
+        <HeaderAuthActions />
       )}
     </div>
   );
