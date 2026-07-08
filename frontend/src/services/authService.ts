@@ -15,17 +15,71 @@ import {
 const getReadableZodError = (error: { issues: Array<{ message: string }> }): string =>
   error.issues[0]?.message ?? 'Invalid request payload';
 
-const getApiErrorMessage = (error: unknown, fallback: string): string => {
+type AuthOperation = 'login' | 'register' | 'current-user' | 'refresh';
+
+const getBackendErrorMessage = (error: unknown): string | null => {
   if (!axios.isAxiosError(error) || !error.response) {
-    return fallback;
+    return null;
   }
 
   const parsed = apiErrorSchema.safeParse(error.response.data);
   if (parsed.success) {
-    return parsed.data.message || parsed.data.error || fallback;
+    return parsed.data.message || parsed.data.error || null;
   }
 
-  return fallback;
+  const responseData = error.response.data as { message?: unknown; error?: unknown } | undefined;
+  if (typeof responseData?.message === 'string' && responseData.message.trim().length > 0) {
+    return responseData.message;
+  }
+
+  if (typeof responseData?.error === 'string' && responseData.error.trim().length > 0) {
+    return responseData.error;
+  }
+
+  return null;
+};
+
+const normalizeAuthError = (error: unknown, operation: AuthOperation, fallback: string): string => {
+  if (!axios.isAxiosError(error)) {
+    return fallback;
+  }
+
+  if (!error.response) {
+    return 'Unable to connect to the server. Please check your internet connection and try again.';
+  }
+
+  const backendMessage = getBackendErrorMessage(error);
+  const status = error.response.status;
+
+  if (operation === 'login') {
+    if (status === 401) {
+      return 'Incorrect email or password.';
+    }
+
+    if (status === 400 && backendMessage?.toLowerCase().includes('validation error')) {
+      return 'Please enter a valid email and password.';
+    }
+  }
+
+  if (operation === 'register') {
+    if (status === 409) {
+      return 'An account with this email already exists. Please log in instead.';
+    }
+
+    if (status === 400 && backendMessage?.toLowerCase().includes('validation error')) {
+      return 'Please check your name, email, and password and try again.';
+    }
+  }
+
+  if (operation === 'refresh' && status === 401) {
+    return 'Your session has expired. Please sign in again.';
+  }
+
+  if (operation === 'current-user' && status === 401) {
+    return 'Your session is no longer valid. Please sign in again.';
+  }
+
+  return backendMessage ?? fallback;
 };
 
 class AuthService {
@@ -68,7 +122,7 @@ class AuthService {
       this.setTokens(result.data.data.accessToken, result.data.data.refreshToken);
       return result.data;
     } catch (error) {
-      throw new Error(getApiErrorMessage(error, 'Registration failed'));
+      throw new Error(normalizeAuthError(error, 'register', 'Registration failed. Please try again.'));
     }
   }
 
@@ -89,7 +143,7 @@ class AuthService {
       this.setTokens(result.data.data.accessToken, result.data.data.refreshToken);
       return result.data;
     } catch (error) {
-      throw new Error(getApiErrorMessage(error, 'Login failed'));
+      throw new Error(normalizeAuthError(error, 'login', 'Login failed. Please try again.'));
     }
   }
 
@@ -113,10 +167,7 @@ class AuthService {
       return newAccessToken;
     } catch (error) {
       this.removeTokens();
-      if (error instanceof Error) {
-        throw new Error('Failed to refresh token');
-      }
-      throw new Error('An unknown error occurred while refreshing the token');
+      throw new Error(normalizeAuthError(error, 'refresh', 'Failed to refresh your session.'));
     }
   }
 
@@ -163,7 +214,7 @@ class AuthService {
 
       return result.data;
     } catch (error) {
-      throw new Error(getApiErrorMessage(error, 'Failed to get user data'));
+      throw new Error(normalizeAuthError(error, 'current-user', 'Failed to load your account details.'));
     }
   }
 
