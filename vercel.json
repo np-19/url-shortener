@@ -9,36 +9,31 @@
       "framework": "express"
     }
   },
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": { "service": "backend" }
+      "src": "/api/(.*)",
+      "dest": { "service": "backend" }
     },
     {
-      "source": "/assets/(.*)",
-      "destination": { "service": "frontend" }
+      "handle": "filesystem"
     },
     {
-      "source": "/logo.svg",
-      "destination": { "service": "frontend" }
-    },
-    {
-      "source": "/(analytics|login|register|my-urls|not-found)",
-      "destination": {
+      "src": "/(analytics|login|register|my-urls|not-found)",
+      "dest": {
         "service": "frontend",
-        "path": "/index.html"
+        "path": "/"
       }
     },
     {
-      "source": "/",
-      "destination": {
+      "src": "/",
+      "dest": {
         "service": "frontend",
-        "path": "/index.html"
+        "path": "/"
       }
     },
     {
-      "source": "/(.*)",
-      "destination": { "service": "backend" }
+      "src": "/(.*)",
+      "dest": { "service": "backend" }
     }
   ]
 }
