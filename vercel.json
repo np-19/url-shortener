@@ -24,11 +24,17 @@
     },
     {
       "source": "/(analytics|login|register|my-urls|not-found)",
-      "destination": { "service": "frontend" }
+      "destination": {
+        "service": "frontend",
+        "path": "/index.html"
+      }
     },
     {
       "source": "/",
-      "destination": { "service": "frontend" }
+      "destination": {
+        "service": "frontend",
+        "path": "/index.html"
+      }
     },
     {
       "source": "/(.*)",
