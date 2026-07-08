@@ -14,6 +14,7 @@ import RegisterPage from './pages/RegisterPage';
 
 const MyUrlsPage = React.lazy(() => import('./pages/MyUrlsPage'));
 const AnalyticsPage = React.lazy(() => import('./pages/AnalyticsPage'));
+const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -112,6 +113,8 @@ const AppContent = () => {
                   </ProtectedRoute>
                 }
               />
+              <Route path="/not-found" element={<NotFoundPage />} />
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Suspense>
         </Container>
