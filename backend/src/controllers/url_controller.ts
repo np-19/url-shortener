@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { AuthenticatedRequest } from "../types/auth_types.js";
 import { createUrlService } from "../services/url_service.js";
 import { ExpressError } from "../utils/expressError.js";
 import { findUrlByShortIdDB, getAllUrlsDB, getUrlsByUserIdDB, getUrlsByUserIdForAnalyticsDB, incrementClicksDB, isAliasInUseDB } from "../dao/url_dao.js";
@@ -12,7 +13,7 @@ import { neverExpiresAt, frontendUrl } from "../config/constants.js";
 
 
 export const createUrlController = async (
-  req: Request, res: Response
+  req: AuthenticatedRequest, res: Response
 ): Promise<void> => {
   const urlData = createUrlSchema.safeParse(req.body);
   if (!urlData.success) {
@@ -109,7 +110,7 @@ export const getAllUrlsController = async (
 };
 
 export const getMyUrlsController = async (
-  req: Request, res: Response
+  req: AuthenticatedRequest, res: Response
 ): Promise<void> => {
   const userId = req.user?.userId;
   if (!userId) {
@@ -128,7 +129,7 @@ export const getMyUrlsController = async (
 };
 
 export const getAnalyticsController = async (
-  req: Request, res: Response
+  req: AuthenticatedRequest, res: Response
 ): Promise<void> => {
   const userId = req.user?.userId;
   if (!userId) {

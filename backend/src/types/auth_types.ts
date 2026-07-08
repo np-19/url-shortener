@@ -1,3 +1,5 @@
+import { Request } from "express";
+
 export interface AuthResponse {
   accessToken: string;
   refreshToken: string;
@@ -7,3 +9,11 @@ export interface AuthResponse {
     email: string;
   };
 }
+
+export interface AuthenticatedRequest extends Request {
+  user?: {
+    userId: string;
+    email: string;
+  };
+}
+
