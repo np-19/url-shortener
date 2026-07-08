@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { clearError, loginUser, setError } from '../../store/slices/authSlice';
 import Button from '../Button';
 import { loginDataSchema } from '../../schemas/apiSchemas';
-import AuthSplitPage from './AuthSplitPage';
+import AuthCard from './AuthCard';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -34,12 +34,7 @@ const Login = () => {
   const displayError = error;
 
   return (
-    <AuthSplitPage
-      heroTitle={<>Welcome back to <span className="text-gradient">smarter links.</span></>}
-      heroDescription="Access your dashboard to track analytics, manage custom aliases, and create new shortened URLs instantly."
-      heroBadgeTitle="Lightning Fast"
-      heroBadgeDescription="Zero-delay redirects"
-      heroBadgeIcon={<svg className="h-6 w-6 text-forest-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>}
+    <AuthCard
       cardTitle="Sign in"
       cardSubtitle={
         <>
@@ -71,7 +66,7 @@ const Login = () => {
           {loading ? 'Signing in...' : 'Sign in'}
         </Button>
       </form>
-    </AuthSplitPage>
+    </AuthCard>
   );
 };
 

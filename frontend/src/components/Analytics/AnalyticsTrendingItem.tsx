@@ -12,12 +12,12 @@ const AnalyticsTrendingItem = ({ url, index, onCopy }: AnalyticsTrendingItemProp
     index === 0
       ? 'bg-forest-500 text-white'
       : index === 1
-        ? 'bg-forest-100 text-forest-600'
-        : 'bg-silver-100 text-silver-500';
+        ? 'bg-forest-50 text-forest-600'
+        : 'bg-silver-50 text-silver-400';
 
   return (
-    <div className="group flex items-center gap-3 rounded-xl py-2.5 px-3 transition-all hover:bg-beige-50">
-      <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-black ${badgeClassName}`}>
+    <div className="group flex items-center gap-3 rounded-xl py-2.5 px-3 transition-all hover:bg-silver-50/50">
+      <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${badgeClassName}`}>
         {index + 1}
       </div>
 
@@ -35,11 +35,11 @@ const AnalyticsTrendingItem = ({ url, index, onCopy }: AnalyticsTrendingItemProp
         </div>
       </div>
 
-      <span className="text-sm font-black text-forest-500 tabular-nums">{url.clicks}</span>
+      <span className="text-sm font-bold text-forest-500 tabular-nums">{url.clicks} clicks</span>
 
       <button
         onClick={() => onCopy(url.shortId)}
-        className="shrink-0 rounded-lg p-1.5 text-silver-300 transition-all hover:bg-silver-100 hover:text-silver-600"
+        className="shrink-0 rounded-lg p-1.5 text-silver-300 transition-all hover:bg-silver-100/50 hover:text-silver-600"
         title="Copy URL"
       >
         <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

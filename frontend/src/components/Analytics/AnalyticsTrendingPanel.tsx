@@ -8,12 +8,12 @@ interface AnalyticsTrendingPanelProps {
 }
 
 const AnalyticsTrendingPanel = ({ trending, onCopy }: AnalyticsTrendingPanelProps) => (
-  <div className="rounded-2xl border border-silver-100 bg-white p-5">
-    <div className="mb-3 flex items-center gap-2">
+  <div className="rounded-2xl border border-silver-200 bg-white/80 p-5 backdrop-blur-sm shadow-xs">
+    <div className="mb-4 flex items-center gap-2 border-b border-silver-100 pb-3">
       <svg className="h-4 w-4 text-forest-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
       </svg>
-      <h3 className="text-sm font-bold uppercase tracking-widest text-silver-500">Top Performing</h3>
+      <h3 className="text-[10px] font-bold uppercase tracking-wider text-silver-450">Top Performing Links</h3>
     </div>
 
     {trending.length === 0 ? (

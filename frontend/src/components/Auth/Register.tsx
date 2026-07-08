@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { clearError, registerUser, setError } from '../../store/slices/authSlice';
 import Button from '../Button';
 import { registerDataSchema } from '../../schemas/apiSchemas';
-import AuthSplitPage from './AuthSplitPage';
+import AuthCard from './AuthCard';
 import authService from '../../services/authService';
 import { useDebouncedCallback } from '../../hooks/useDebouncedCallback';
 
@@ -114,12 +114,7 @@ const Register = () => {
   const displayError = error;
 
   return (
-    <AuthSplitPage
-      heroTitle={<>Join the future of <span className="text-gradient">link sharing.</span></>}
-      heroDescription="Create an account to start managing your links, tracking detailed analytics, and elevating your brand."
-      heroBadgeTitle="Secure & Private"
-      heroBadgeDescription="Your data is safe"
-      heroBadgeIcon={<svg className="h-6 w-6 text-forest-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+    <AuthCard
       cardTitle="Create account"
       cardSubtitle={
         <>
@@ -181,7 +176,7 @@ const Register = () => {
           {loading ? 'Creating account...' : 'Create account'}
         </Button>
       </form>
-    </AuthSplitPage>
+    </AuthCard>
   );
 };
 

@@ -13,18 +13,16 @@ interface AnalyticsStatCardProps {
 const AnalyticsStatCard = ({
   title,
   value,
-  iconBackgroundClassName,
-  iconClassName,
   icon,
 }: AnalyticsStatCardProps) => {
   return (
-    <div className="flex items-center gap-4 rounded-2xl border border-silver-100 bg-white p-4 transition-all duration-200 hover:shadow-md">
-      <div className={`${iconBackgroundClassName} shrink-0 rounded-xl border p-2.5 shadow-sm`}>
-        <div className={iconClassName}>{icon}</div>
+    <div className="flex items-center gap-4 rounded-xl border border-silver-200 bg-white/80 p-4.5 transition-all duration-300 hover:border-silver-300 hover:shadow-xs">
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-silver-150 bg-silver-50 text-silver-500 shadow-2xs">
+        {icon}
       </div>
       <div className="min-w-0">
-        <p className="text-xs font-bold uppercase tracking-widest text-silver-400">{title}</p>
-        <p className="text-2xl font-black tracking-tight text-silver-900">{value}</p>
+        <p className="text-[10px] font-bold uppercase tracking-wider text-silver-450">{title}</p>
+        <p className="text-xl font-extrabold tracking-tight text-silver-900 mt-0.5">{value}</p>
       </div>
     </div>
   );

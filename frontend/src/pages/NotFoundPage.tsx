@@ -5,40 +5,10 @@ import Container from '../components/Container/Container';
 const NotFoundPage = () => {
   return (
     <Container>
-      <div className="flex flex-col md:flex-row gap-12 md:gap-8 items-center justify-between min-h-[70vh] py-12 md:py-16 text-left animate-fadeIn">
-        
-        {/* Left Column - Information */}
-        <div className="w-full md:w-1/2 space-y-6">
-          <p className="text-xs sm:text-sm font-bold uppercase tracking-widest text-apple-500">
-            Error 404 - Page Not Found
-          </p>
-          <h2 className="text-4xl sm:text-5xl font-black text-silver-900 tracking-tight leading-tight">
-            You've got the wrong address.
-          </h2>
-          <div className="space-y-4 text-silver-500 text-base sm:text-lg leading-relaxed font-medium">
-            <p>
-              You may have mis-typed the URL or simply clicked on a broken link or QR code. 
-              Snipr links are <span className="font-extrabold text-silver-800">case-sensitive</span>, 
-              so double check that everything is correct and try again.
-            </p>
-            <p>
-              If you continue to see this error, we suggest reaching out to the person or 
-              organization that shared it with you. P.S. You do not need to sign up (or sign in) 
-              to access a Snipr link.
-            </p>
-          </div>
-          <div className="pt-4">
-            <Link to="/">
-              <Button className="px-8 py-3.5 text-lg font-bold shadow-md hover:shadow-lg">
-                Go to Homepage
-              </Button>
-            </Link>
-          </div>
-        </div>
-
-        {/* Right Column - Illustration */}
-        <div className="w-full md:w-1/2 max-w-md flex justify-center items-center">
-          <svg className="w-full h-auto drop-shadow-xl" width="400" height="340" viewBox="0 0 400 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <div className="flex flex-col items-center justify-center min-h-[75vh] py-12 md:py-16 text-center animate-fadeIn max-w-xl mx-auto space-y-6">
+        {/* Illustration */}
+        <div className="w-full max-w-xs flex justify-center items-center mb-4">
+          <svg className="w-full h-auto" width="400" height="340" viewBox="0 0 400 340" fill="none" xmlns="http://www.w3.org/2000/svg">
             {/* Background elements */}
             <circle cx="200" cy="170" r="140" fill="#f5f5f0" />
             <circle cx="90" cy="100" r="25" fill="#eff6ff" />
@@ -99,6 +69,29 @@ const NotFoundPage = () => {
           </svg>
         </div>
 
+        {/* Text information */}
+        <div className="space-y-4">
+          <p className="text-xs font-bold uppercase tracking-widest text-apple-500">
+            Error 404 - Page Not Found
+          </p>
+          <h2 className="text-3xl font-extrabold text-silver-900 tracking-tight leading-tight sm:text-4xl">
+            You've got the wrong address.
+          </h2>
+          <div className="space-y-3 text-silver-500 text-sm sm:text-base leading-relaxed font-medium px-4">
+            <p>
+              Snipr links are case-sensitive. Please double-check your spelling, or verify that the owner has not deleted or changed the URL path.
+            </p>
+          </div>
+        </div>
+
+        {/* CTA Button */}
+        <div className="pt-2">
+          <Link to="/">
+            <Button className="px-6 py-3 font-bold shadow-xs">
+              Go to Homepage
+            </Button>
+          </Link>
+        </div>
       </div>
     </Container>
   );
