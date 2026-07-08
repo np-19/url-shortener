@@ -1,10 +1,23 @@
+import { useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAppSelector } from '../store/hooks';
+import { useToast } from '../context/ToastContext';
 import HomeHero from '../components/Home/HomeHero';
 import HomeFeatureRail from '../components/Home/HomeFeatureRail';
 import UrlShortener from '../components/Url/UrlShortener';
 
 const Home = () => {
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const toast = useToast();
+
+  useEffect(() => {
+    if (searchParams.get('error') === 'url-not-found') {
+      toast.error('The link you tried to visit does not exist or has expired.');
+      searchParams.delete('error');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams, toast]);
 
   const handleUrlCreated = () => {
     // URL created callback

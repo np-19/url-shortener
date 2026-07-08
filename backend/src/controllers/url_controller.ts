@@ -52,7 +52,7 @@ export const redirectUrlController = async (req: Request, res: Response): Promis
   // Fast negative check using Bloom filter to avoid unnecessary DB lookups
   const mightExist = await mightExistInBloom(shortId);
   if (!mightExist) {
-    res.redirect(frontendUrl);
+    res.redirect(`${frontendUrl}?error=url-not-found`);
     return;
   }
   
@@ -64,7 +64,7 @@ export const redirectUrlController = async (req: Request, res: Response): Promis
   } else {
     const url = await findUrlByShortIdDB(shortId);
     if (!url) {
-      res.redirect(frontendUrl);
+      res.redirect(`${frontendUrl}?error=url-not-found`);
       return;
     }
     originalUrl = url.originalUrl;
