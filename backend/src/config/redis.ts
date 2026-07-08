@@ -14,6 +14,7 @@ export const connectRedis = async (): Promise<void> => {
 			host: redisHost,
 			port: redisPort,
 			connectTimeout: 5000,
+			reconnectStrategy: () => false,
 		},
 	});
 
