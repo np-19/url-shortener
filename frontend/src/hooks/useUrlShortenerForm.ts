@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import urlService from '../services/urlService';
 import { urlDataSchema } from '../schemas/apiSchemas';
 
@@ -15,6 +16,7 @@ export const expiresOptions = [
 ] as const;
 
 export const useUrlShortenerForm = (onUrlCreated: () => void) => {
+  const queryClient = useQueryClient();
   const [url, setUrl] = useState('');
   const [customAlias, setCustomAlias] = useState('');
   const [showCustomAlias, setShowCustomAlias] = useState(false);
@@ -72,6 +74,12 @@ export const useUrlShortenerForm = (onUrlCreated: () => void) => {
     try {
       const data = await urlService.createUrl(validatedData.data);
       setShortUrl(urlService.getShortUrl(data.shortId));
+
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['my-urls'] }),
+        queryClient.invalidateQueries({ queryKey: ['analytics'] }),
+      ]);
+
       resetForm();
       onUrlCreated();
     } catch (err: unknown) {
