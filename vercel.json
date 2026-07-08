@@ -22,8 +22,16 @@
       "handle": "filesystem"
     },
     {
-      "src": "/(.*)",
+      "src": "/(analytics|login|register|my-urls|not-found)",
       "dest": "frontend/index.html"
+    },
+    {
+      "src": "/",
+      "dest": "frontend/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "backend/src/server.ts"
     }
   ]
 }
