@@ -13,6 +13,7 @@ export interface IUrl extends Document {
   createdAt: Date;
   expiresAt: Date; 
   updatedAt: Date;
+  clicksByDate?: Map<string, number> | Record<string, number>;
 }
 
 export interface IUser extends Document {

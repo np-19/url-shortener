@@ -14,16 +14,32 @@ export const computeTrendingUrls = (urls: IUrl[]) => {
     .slice(0, trendingTopN);
 };
 
-// Build a clicks-per-day timeline from URL creation dates
+// Build a clicks-per-day timeline from URL creation dates and click dates
 const buildClicksTimeline = (urls: IUrl[]) => {
   const dayMap = new Map<string, { clicks: number; links: number }>();
 
   for (const url of urls) {
-    const day = new Date(url.createdAt).toISOString().slice(0, 10);
-    const entry = dayMap.get(day) ?? { clicks: 0, links: 0 };
-    entry.clicks += url.clicks;
-    entry.links += 1;
-    dayMap.set(day, entry);
+    // 1. Process URL creation date (link count)
+    const creationDay = new Date(url.createdAt).toISOString().slice(0, 10);
+    const creationEntry = dayMap.get(creationDay) ?? { clicks: 0, links: 0 };
+    creationEntry.links += 1;
+    dayMap.set(creationDay, creationEntry);
+
+    // 2. Process click dates (clicks count)
+    if (url.clicksByDate) {
+      const clicksObj = url.clicksByDate instanceof Map 
+        ? Object.fromEntries(url.clicksByDate) 
+        : url.clicksByDate;
+
+      for (const [clickDay, count] of Object.entries(clicksObj)) {
+        const clickEntry = dayMap.get(clickDay) ?? { clicks: 0, links: 0 };
+        clickEntry.clicks += count;
+        dayMap.set(clickDay, clickEntry);
+      }
+    } else {
+      // Fallback for legacy URLs: attribute all clicks to the creation date
+      creationEntry.clicks += url.clicks;
+    }
   }
 
   return Array.from(dayMap.entries())

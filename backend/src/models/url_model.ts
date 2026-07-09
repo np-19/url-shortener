@@ -29,7 +29,11 @@ const urlSchema: Schema = new Schema<IUrl>(
         type: Date,
         required: true
     },
-
+    clicksByDate: {
+        type: Map,
+        of: Number,
+        default: {}
+    },
   },
   { timestamps: true }
 );

@@ -48,7 +48,7 @@ export const getUrlsByUserIdDB = async (userId: string, cursor?: string, limit: 
 
 export const getUrlsByUserIdForAnalyticsDB = async (userId: string, limit: number = 100): Promise<IUrl[]> => {
     const urls: IUrl[] = await UrlModel.find({ userId: getNormalizedUserId(userId) })
-        .select({ shortId: 1, clicks: 1, originalUrl: 1, createdAt: 1 })
+        .select({ shortId: 1, clicks: 1, originalUrl: 1, createdAt: 1, clicksByDate: 1 })
         .sort({ _id: -1 })
         .limit(limit)
         .lean<IUrl[]>();
@@ -57,9 +57,15 @@ export const getUrlsByUserIdForAnalyticsDB = async (userId: string, limit: numbe
 }
 
 export const incrementClicksDB = async (shortId: string) : Promise<void> => {
+    const today = new Date().toISOString().slice(0, 10);
     await UrlModel.findOneAndUpdate(
         { shortId },
-        { $inc: { clicks: 1 } }
+        { 
+            $inc: { 
+                clicks: 1,
+                [`clicksByDate.${today}`]: 1
+            } 
+        }
     );
 }
 
