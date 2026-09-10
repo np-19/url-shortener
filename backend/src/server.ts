@@ -14,6 +14,10 @@ import { performanceLogger } from "./middlewares/performace.logger.js";
 
 const app = express();
 
+app.get("/api/health", (req, res) => {
+  return res.status(200).send("OK");
+});
+
 // ==================== Middlewares ====================
 
 app.use(express.json());
