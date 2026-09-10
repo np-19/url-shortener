@@ -6,6 +6,8 @@ type RedisClient = ReturnType<typeof createClient>;
 
 let redisClient: RedisClient | null = null;
 let redisConnectionPromise: Promise<void> | null = null;
+let lastRedisFailureAt = 0;
+const REDIS_RETRY_COOLDOWN_MS = 30_000;
 
 export const connectRedis = async (): Promise<void> => {
 	if (isRedisReady()) {
@@ -14,6 +16,10 @@ export const connectRedis = async (): Promise<void> => {
 
 	if (redisConnectionPromise) {
 		return redisConnectionPromise;
+	}
+
+	if (Date.now() - lastRedisFailureAt < REDIS_RETRY_COOLDOWN_MS) {
+		return;
 	}
 
 	const client = createClient({
@@ -43,9 +49,12 @@ export const connectRedis = async (): Promise<void> => {
 	redisConnectionPromise = client.connect()
 		.then(() => {
 			redisClient = client;
+			lastRedisFailureAt = 0;
 		})
 		.catch((error) => {
 			redisClient = null;
+			lastRedisFailureAt = Date.now();
+			client.destroy();
 			console.warn('Redis unavailable. Continuing without Redis:', error.message);
 		})
 		.finally(() => {
@@ -72,4 +81,5 @@ export const disconnectRedis = async (): Promise<void> => {
 	}
 	redisClient = null;
 	redisConnectionPromise = null;
+	lastRedisFailureAt = 0;
 };
