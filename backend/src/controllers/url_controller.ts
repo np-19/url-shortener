@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { createUrlService } from "../services/url_service.js";
 import { ExpressError } from "../utils/expressError.js";
 import { findUrlByShortIdDB, getAllUrlsDB, getUrlsByUserIdDB, getUrlsByUserIdForAnalyticsDB, incrementClicksDB, isAliasInUseDB } from "../dao/url_dao.js";
-import { getCachedUrl, setCachedUrl, incrementCachedClicks } from "../services/cache_service.js";
+import { getCachedUrl, setCachedUrl } from "../services/cache_service.js";
 import { addToBloom, mightExistInBloom } from "../services/bloom_service.js";
 import { getAnalyticsSummary } from "../services/analytics_service.js";
 import type { CreateUrlRecord } from "../types/url_types.js";
@@ -77,22 +77,13 @@ export const redirectUrlController = async (req: Request, res: Response): Promis
     });
   }
 
-  // 1. Send the redirect first for speed
-  res.redirect(originalUrl);
+  try {
+    await incrementClicksDB(shortId);
+  } catch (error) {
+    console.error(`Analytics update failed for ${shortId}:`, error);
+  }
 
-  // 2. Wrap background updates in an async block with error handling
-  setImmediate(async () => {
-    try {
-      // Run these in parallel to be efficient
-      await Promise.all([
-        incrementCachedClicks(shortId),
-        incrementClicksDB(shortId)
-      ]);
-    } catch (error) {
-      // Log this to a service like Sentry or Winston
-      console.error(`Analytics update failed for ${shortId}:`, error);
-    }
-  });
+  res.redirect(originalUrl);
 };
 
 export const getAllUrlsController = async (

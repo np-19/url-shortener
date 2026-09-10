@@ -6,7 +6,6 @@ export interface CreateUrlRecord { //stored in DB
 
 export interface CachedUrl {
 	originalUrl: string;
-	clicks: number;
 }
 
 
