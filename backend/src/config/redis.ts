@@ -46,7 +46,7 @@ export const connectRedis = async (): Promise<void> => {
 		})
 		.catch((error) => {
 			redisClient = null;
-			throw error;
+			console.warn('Redis unavailable. Continuing without Redis:', error.message);
 		})
 		.finally(() => {
 			redisConnectionPromise = null;

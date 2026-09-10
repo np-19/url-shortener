@@ -32,6 +32,35 @@ app.use(
   })
 );
 
+let initializationPromise: Promise<void> | null = null;
+
+const initializeDependencies = (): Promise<void> => {
+  if (!initializationPromise) {
+    initializationPromise = (async () => {
+      await connectDB();
+      console.log("MongoDB connected");
+      await connectRedis();
+      console.log("Redis connected");
+      await rebuildBloomFromDatabase();
+      console.log("Bloom filter rebuilt");
+    })().catch((error) => {
+      initializationPromise = null;
+      throw error;
+    });
+  }
+
+  return initializationPromise;
+};
+
+app.use(async (_req, _res, next) => {
+  try {
+    await initializeDependencies();
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.use(wrapAsync(rateLimiterMiddleware));
 app.use(performanceLogger);
 
@@ -52,22 +81,7 @@ app.use(errorHandler);
 
 const startServer = async () => {
   try {
-    // Critical dependency
-    await connectDB();
-    console.log("MongoDB connected");
-
-    // Optional dependency
-    try {
-      await connectRedis();
-      console.log("Redis connected");
-    } catch (err) {
-      console.warn("Redis unavailable. Starting without Redis.");
-      console.error(err);
-    }
-
-    await rebuildBloomFromDatabase();
-    console.log("Bloom filter rebuilt");
-
+    await initializeDependencies(); 
     app.listen(port, () => {
       console.log(`Server running on http://localhost:${port}`);
     });
