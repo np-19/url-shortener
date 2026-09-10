@@ -14,7 +14,7 @@ export const setCachedUrl = async (shortId: string, originalUrl: string, expires
 		}
 		const ttl = Math.floor((expiresAt.getTime() - Date.now()) / 1000);
 		const finalTtl = ttl > 0 ? ttl : DEFAULT_CACHE_TTL;
-		await redisClient.set(key, originalUrl, 'EX', finalTtl);
+		await redisClient.set(key, originalUrl, { EX: finalTtl });
 	} catch (err: any) {
 		console.warn(`Redis unavailable, skipping cache set for ${shortId}: `, err.message);
 	}
