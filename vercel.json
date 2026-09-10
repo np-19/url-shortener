@@ -6,7 +6,9 @@
     },
     "backend": {
       "root": "backend",
-      "framework": "express"
+      "framework": "express",
+      "entrypoint": "server.cjs",
+      "buildCommand": "npx tsc -p tsconfig.vercel.json"
     }
   },
   "rewrites": [
