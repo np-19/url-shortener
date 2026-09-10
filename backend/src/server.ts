@@ -10,6 +10,7 @@ import { rateLimiterMiddleware } from "./middlewares/rateLimiter.js";
 import { wrapAsync } from "./utils/wrapAsync.js";
 import { redirectUrlController } from "./controllers/url_controller.js";
 import { rebuildBloomFromDatabase } from "./services/bloom_service.js";
+import { performanceLogger } from "./middlewares/performace.logger.js";
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use(
 );
 
 app.use(wrapAsync(rateLimiterMiddleware));
+app.use(performanceLogger);
 
 // ==================== Routes ====================
 

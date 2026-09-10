@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { registerUser, loginUser, refreshUserToken } from "../services/auth_service.js";
-import { AuthenticatedRequest } from "../types/auth_types.js";
 import { ExpressError } from "../utils/expressError.js";
 import { findUserByIdDB, isEmailInUseDB } from "../dao/user_dao.js";
 import { createUserSchema, loginUserSchema } from "../validations/user_val.js";
@@ -55,7 +54,7 @@ export const loginController = async (
 };
 
 export const getMeController = async (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response
 ): Promise<void> => {
   if (!req.user) {

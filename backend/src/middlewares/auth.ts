@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyAccessToken } from "../utils/jwt.js";
 import { ExpressError } from "../utils/expressError.js";
-import { AuthenticatedRequest } from "../types/auth_types.js";
 
 export const authenticate = (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): void => {
@@ -30,7 +29,7 @@ export const authenticate = (
 };
 
 export const optionalAuth = (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): void => {
@@ -47,7 +46,7 @@ export const optionalAuth = (
   next();
 };
 
-export const authorize = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
+export const authorize = (req: Request, res: Response, next: NextFunction): void => {
   if (!req.user) {
     return next(new ExpressError("Unauthorized", 401));
   }
