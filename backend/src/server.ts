@@ -53,15 +53,6 @@ const initializeDependencies = (): Promise<void> => {
   return initializationPromise;
 };
 
-app.use(async (_req, _res, next) => {
-  try {
-    await initializeDependencies();
-    next();
-  } catch (error) {
-    next(error);
-  }
-});
-
 app.use(wrapAsync(rateLimiterMiddleware));
 app.use(performanceLogger);
 
@@ -93,8 +84,6 @@ const startServer = async () => {
   }
 };
 
-if (process.env.VERCEL !== "1") {
-  startServer();
-}
+startServer();
 
 export default app;
