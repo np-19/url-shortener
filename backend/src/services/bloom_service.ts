@@ -13,6 +13,7 @@ const BYTE_SIZE = Math.ceil(BLOOM_M / 8);
 let bitArray = Buffer.alloc(BYTE_SIZE, 0);
 let loaded = false;
 let isHealthy = false; // Track if bloom filter is operational
+let loadPromise: Promise<void> | null = null;
 
 const setBloomBits = (shortId: string, target: Buffer = bitArray): void => {
   const positions = getHashes(shortId);
@@ -53,19 +54,27 @@ const ensureLoaded = async (): Promise<void> => {
     return;
   }
 
-  await loadFromDatabase();
+  if (!loadPromise) {
+    loadPromise = loadFromDatabase()
+      .then(() => {
+        loaded = true;
+      })
+      .finally(() => {
+        loadPromise = null;
+      });
+  }
 
-  loaded = true;
+  await loadPromise;
 };
 
 export const rebuildBloomFromDatabase = async (): Promise<void> => {
-  loaded = false;
-  try {
-    await loadFromDatabase();
-  } catch (err: any) {
-    isHealthy = false;
-    console.warn("Failed to rebuild bloom filter:", err?.message || err);
+  if (loadPromise) {
+    await loadPromise;
+    return;
   }
+
+  loaded = false;
+  await ensureLoaded();
 };
 
 const getHashes = (value: string): number[] => {

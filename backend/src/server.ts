@@ -9,7 +9,6 @@ import { errorHandler } from "./middlewares/errorHandler.js";
 import { rateLimiterMiddleware } from "./middlewares/rateLimiter.js";
 import { wrapAsync } from "./utils/wrapAsync.js";
 import { redirectUrlController } from "./controllers/url_controller.js";
-import { rebuildBloomFromDatabase } from "./services/bloom_service.js";
 import { performanceLogger } from "./middlewares/performace.logger.js";
 
 const app = express();
@@ -42,8 +41,6 @@ const initializeDependencies = (): Promise<void> => {
       console.log("MongoDB connected");
       await connectRedis();
       console.log("Redis connected");
-      await rebuildBloomFromDatabase();
-      console.log("Bloom filter rebuilt");
     })().catch((error) => {
       initializationPromise = null;
       throw error;
@@ -52,6 +49,15 @@ const initializeDependencies = (): Promise<void> => {
 
   return initializationPromise;
 };
+
+app.use(async (_req, _res, next) => {
+  try {
+    await initializeDependencies();
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 
 app.use(wrapAsync(rateLimiterMiddleware));
 app.use(performanceLogger);
@@ -84,6 +90,8 @@ const startServer = async () => {
   }
 };
 
-startServer();
+if (process.env.VERCEL !== "1") {
+  startServer();
+}
 
 export default app;

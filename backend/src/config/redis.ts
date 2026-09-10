@@ -1,85 +1,105 @@
-import { createClient } from 'redis';
-import { redisHost, redisPort, redisUsername, redisPassword } from './constants.js';
+import { Redis } from 'ioredis';
+import { attachDatabasePool } from '@vercel/functions';
+
+import {
+    redisHost,
+    redisPort,
+    redisUsername,
+    redisPassword
+} from './constants.js';
+
 import { ExpressError } from '../utils/expressError.js';
 
-type RedisClient = ReturnType<typeof createClient>;
+const redisClient = new Redis({
+    lazyConnect: true,
 
-let redisClient: RedisClient | null = null;
+    username: redisUsername,
+    password: redisPassword,
+    host: redisHost,
+    port: redisPort,
+
+    connectTimeout: 5000,
+    maxRetriesPerRequest: 1,
+
+    retryStrategy: (retries: number) =>
+        retries >= 2 ? null : Math.min(retries * 100, 1000),
+});
+
+attachDatabasePool(redisClient);
+
 let redisConnectionPromise: Promise<void> | null = null;
 let lastRedisFailureAt = 0;
+
 const REDIS_RETRY_COOLDOWN_MS = 30_000;
 
+redisClient.on('error', (error: Error) => {
+    console.error('Redis connection error:', error);
+});
+
+redisClient.on('ready', () => {
+    console.log('Redis connected successfully');
+});
+
+
 export const connectRedis = async (): Promise<void> => {
-	if (isRedisReady()) {
-		return;
-	}
 
-	if (redisConnectionPromise) {
-		return redisConnectionPromise;
-	}
+    if (isRedisReady()) {
+        return;
+    }
 
-	if (Date.now() - lastRedisFailureAt < REDIS_RETRY_COOLDOWN_MS) {
-		return;
-	}
+    if (redisConnectionPromise) {
+        return redisConnectionPromise;
+    }
 
-	const client = createClient({
-		username: redisUsername,
-		password: redisPassword,
-		socket: {
-			host: redisHost,
-			port: redisPort,
-			connectTimeout: 5000,
-			reconnectStrategy: (retries) => {
-				if (retries >= 2) {
-					return false;
-				}
-				return Math.min(retries * 100, 1000);
-			},
-		},
-	});
+    if (Date.now() - lastRedisFailureAt < REDIS_RETRY_COOLDOWN_MS) {
+        return;
+    }
 
-	client.on('error', (error) => {
-		console.error('Redis connection error:', error);
-	});
+    redisConnectionPromise = redisClient
+        .connect()
+        .then(() => {
+            lastRedisFailureAt = 0;
+        })
+        .catch((error: Error) => {
+            lastRedisFailureAt = Date.now();
 
-	client.on('connect', () => {
-		console.log('Redis connected successfully');
-	});
+            console.warn(
+                'Redis unavailable. Continuing without Redis:',
+                error.message
+            );
+        })
+        .finally(() => {
+            redisConnectionPromise = null;
+        });
 
-	redisConnectionPromise = client.connect()
-		.then(() => {
-			redisClient = client;
-			lastRedisFailureAt = 0;
-		})
-		.catch((error) => {
-			redisClient = null;
-			lastRedisFailureAt = Date.now();
-			client.destroy();
-			console.warn('Redis unavailable. Continuing without Redis:', error.message);
-		})
-		.finally(() => {
-			redisConnectionPromise = null;
-		});
-
-	return redisConnectionPromise;
+    return redisConnectionPromise;
 };
+
 
 export const isRedisReady = (): boolean => {
-	return !!redisClient && redisClient.isOpen && redisClient.isReady;
+    return redisClient.status === 'ready';
 };
 
-export const getRedisClient = (): RedisClient => {
-	if (!isRedisReady()) {
-		throw new ExpressError('Redis unavailable.', 502);
-	}
-	return redisClient as RedisClient;
+
+export const getRedisClient = (): Redis => {
+
+    if (!isRedisReady()) {
+        throw new ExpressError('Redis unavailable.', 502);
+    }
+
+    return redisClient;
 };
+
 
 export const disconnectRedis = async (): Promise<void> => {
-	if (redisClient?.isOpen) {
-		await redisClient.close();
-	}
-	redisClient = null;
-	redisConnectionPromise = null;
-	lastRedisFailureAt = 0;
+
+    if (
+        redisClient.status === 'ready' ||
+        redisClient.status === 'connecting'
+    ) {
+        redisClient.disconnect();
+    }
+
+    redisConnectionPromise = null;
+    lastRedisFailureAt = 0;
 };
