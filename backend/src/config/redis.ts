@@ -1,5 +1,4 @@
 import { Redis } from 'ioredis';
-import { attachDatabasePool } from '@vercel/functions';
 
 import {
     redisHost,
@@ -24,8 +23,6 @@ const redisClient = new Redis({
     retryStrategy: (retries: number) =>
         retries >= 2 ? null : Math.min(retries * 100, 1000),
 });
-
-attachDatabasePool(redisClient);
 
 let redisConnectionPromise: Promise<void> | null = null;
 let lastRedisFailureAt = 0;
