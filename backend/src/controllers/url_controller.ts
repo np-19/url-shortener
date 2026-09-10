@@ -77,11 +77,11 @@ export const redirectUrlController = async (req: Request, res: Response): Promis
     });
   }
 
-  try {
-    await incrementClicksDB(shortId);
-  } catch (error) {
-    console.error(`Analytics update failed for ${shortId}:`, error);
-  }
+  // Increment clicks in background to avoid slowing down the redirect
+  setImmediate(async () => {
+    try { await incrementClicksDB(shortId); } 
+    catch (e) { console.error("Click increment failed", e); }
+  });
 
   res.redirect(originalUrl);
 };
