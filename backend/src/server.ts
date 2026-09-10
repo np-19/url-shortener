@@ -62,7 +62,7 @@ app.use(async (_req, _res, next) => {
   }
 });
 
-// app.use(wrapAsync(rateLimiterMiddleware));
+app.use(wrapAsync(rateLimiterMiddleware));
 app.use(performanceLogger);
 
 // ==================== Routes ====================
