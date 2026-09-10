@@ -78,5 +78,8 @@ const startServer = async () => {
   }
 };
 
-startServer();
+if (process.env.VERCEL !== "1") {
+  startServer();
+}
+
 export default app;

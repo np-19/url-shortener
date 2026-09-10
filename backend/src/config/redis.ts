@@ -5,8 +5,17 @@ import { ExpressError } from '../utils/expressError.js';
 type RedisClient = ReturnType<typeof createClient>;
 
 let redisClient: RedisClient | null = null;
+let redisConnectionPromise: Promise<void> | null = null;
 
 export const connectRedis = async (): Promise<void> => {
+	if (isRedisReady()) {
+		return;
+	}
+
+	if (redisConnectionPromise) {
+		return redisConnectionPromise;
+	}
+
 	const client = createClient({
 		username: redisUsername,
 		password: redisPassword,
@@ -14,7 +23,12 @@ export const connectRedis = async (): Promise<void> => {
 			host: redisHost,
 			port: redisPort,
 			connectTimeout: 5000,
-			reconnectStrategy: () => false,
+			reconnectStrategy: (retries) => {
+				if (retries >= 2) {
+					return false;
+				}
+				return Math.min(retries * 100, 1000);
+			},
 		},
 	});
 
@@ -26,13 +40,19 @@ export const connectRedis = async (): Promise<void> => {
 		console.log('Redis connected successfully');
 	});
 
-	try {
-		await client.connect();
-		redisClient = client;
-	} catch (error) {
-		redisClient = null;
-		throw error;
-	}
+	redisConnectionPromise = client.connect()
+		.then(() => {
+			redisClient = client;
+		})
+		.catch((error) => {
+			redisClient = null;
+			throw error;
+		})
+		.finally(() => {
+			redisConnectionPromise = null;
+		});
+
+	return redisConnectionPromise;
 };
 
 export const isRedisReady = (): boolean => {
@@ -51,4 +71,5 @@ export const disconnectRedis = async (): Promise<void> => {
 		await redisClient.close();
 	}
 	redisClient = null;
+	redisConnectionPromise = null;
 };

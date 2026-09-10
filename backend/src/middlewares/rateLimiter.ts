@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { getRedisClient } from '../config/redis.js';
+import { connectRedis, getRedisClient, isRedisReady } from '../config/redis.js';
 import { ExpressError } from '../utils/expressError.js';
 import { rateLimitWindowMs, rateLimitRequests } from '../config/constants.js';
 
@@ -25,6 +25,19 @@ const getWindowStart = (timestamp: number): number => {
 };
 
 export const rateLimiterMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+	if (!isRedisReady()) {
+		try {
+			await connectRedis();
+		} catch (error: any) {
+			if (!hasLoggedRedisUnavailable) {
+				console.error('Rate limiter disabled because Redis is unavailable:', error.message);
+				hasLoggedRedisUnavailable = true;
+			}
+			next();
+			return;
+		}
+	}
+
 	let redisClient;
 
 	try {
