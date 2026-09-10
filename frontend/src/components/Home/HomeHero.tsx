@@ -3,9 +3,6 @@ import Button from '../Button';
 
 const HomeHero = () => (
   <div className="w-full max-w-3xl mx-auto text-center pt-8 md:pt-16 flex flex-col items-center">
-    <div className="inline-block px-4 py-1.5 rounded-full bg-white/80 border border-silver-200 text-silver-600 text-sm font-semibold tracking-wide mb-6 shadow-sm backdrop-blur-xs select-none">
-      ✨ Lightning-Fast & Secure URL Shortening
-    </div>
     
     <h2 className="font-extrabold text-silver-900 mb-6 tracking-tight leading-tight" style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)' }}>
       Make your links <br className="sm:hidden" />
